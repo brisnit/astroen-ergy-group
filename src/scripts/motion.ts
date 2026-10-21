@@ -45,4 +45,17 @@ if (reduce || !('IntersectionObserver' in window)) {
     { rootMargin: '0px 0px -8% 0px', threshold: 0 },
   );
   targets.forEach((el) => !el.classList.contains('is-in') && io.observe(el));
+
+  // Safety net: at the bottom of the page, reveal anything still waiting (an element close to the
+  // end may never cross the observer's margin).
+  const revealRemaining = () => {
+    if (window.scrollY + window.innerHeight < document.documentElement.scrollHeight - 4) return;
+    targets.forEach((el) => {
+      if (el.classList.contains('is-in')) return;
+      io.unobserve(el);
+      show(el, true);
+    });
+    window.removeEventListener('scroll', revealRemaining);
+  };
+  window.addEventListener('scroll', revealRemaining, { passive: true });
 }

@@ -35,7 +35,7 @@ const [goals, adaptable, approvals] = page.sections;
       </div>
       <div class="stack" data-reveal>
         <ol class="numbered goal-list">{goals.list?.map((g) => <li>{g}</li>)}</ol>
-        <div class="note" id={approvals.id}>
+        <div class="note note-warm" id={approvals.id}>
           <h3>{approvals.heading}</h3>
           {approvals.body?.map((b) => <p>{b}</p>)}
         </div>

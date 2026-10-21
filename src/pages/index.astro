@@ -69,7 +69,7 @@ const faqSchema = {
   </section>
 
   <!-- 2. Audience -->
-  <section class="audience section-pale" aria-labelledby="who-title" id="who-we-help">
+  <section class="audience section-peach" aria-labelledby="who-title" id="who-we-help">
     <div class="wrap audience-inner" data-reveal>
       <h2 id="who-title" class="audience-label">{whoWeHelp.heading}</h2>
       <p class="audience-text">{whoWeHelp.body?.[0]}</p>
@@ -118,7 +118,7 @@ const faqSchema = {
   <section class="section solutions" aria-labelledby="solutions-title">
     <div class="wrap sol-grid">
       <div class="sol-media" data-reveal>
-        <LifestyleImage name="field-assessment" sizes="(min-width: 64rem) 46vw, 100vw" class="sol-photo" />
+        <LifestyleImage name="field-assessment" sizes="(min-width: 64rem) 46vw, 100vw" class="sol-photo" caption="Assessments start on site, with the systems themselves." />
       </div>
       <div class="sol-copy">
         <div data-reveal>
@@ -203,7 +203,7 @@ const faqSchema = {
       </div>
       <div class="stack">
         <ul class="check-list" data-stagger>{fundingWork.list?.slice(0, 4).map((l) => <li>{l}</li>)}</ul>
-        <div class="note" data-reveal>
+        <div class="note note-warm" data-reveal>
           <h3 class="note-title">{fundingExpect.heading}</h3>
           {fundingExpect.body?.map((b) => <p>{b}</p>)}
         </div>
@@ -267,7 +267,7 @@ const faqSchema = {
   .audience { padding-block: clamp(1.75rem, 1.25rem + 1.5vw, 2.5rem); }
   .audience-inner { display: grid; gap: 0.5rem 2.5rem; align-items: baseline; }
   @media (min-width: 56rem) { .audience-inner { grid-template-columns: 11rem minmax(0, 1fr); } }
-  .audience-label { margin: 0; font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .audience-label { margin: 0; font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--copper); }
   .audience-text { margin: 0; font-size: clamp(1.1rem, 1rem + 0.5vw, 1.4rem); line-height: 1.45; max-width: 58rem; letter-spacing: -0.01em; }
 
   /* 3. Goals */

@@ -15,13 +15,23 @@ interface Props {
   allowFallback?: boolean;
   class?: string;
   hover?: boolean;
+  /** Optional caption. Describe the idea, not the people or place, since images are illustrative. */
+  caption?: string;
 }
-const { name, sizes, widths = [480, 800, 1200, 1600], eager = false, allowFallback = true, class: className, hover = false } = Astro.props;
+const { name, sizes, widths = [480, 800, 1200, 1600], eager = false, allowFallback = true, class: className, hover = false, caption } = Astro.props;
 const image = resolveImage(name, { allowFallback });
 const usable = image ? widths.filter((w) => w <= image.src.width) : [];
 if (image && !usable.length) usable.push(image.src.width);
 ---
-{image && (
+{image && caption && (
+  <figure class="captioned">
+    <div class:list={['photo', className, { 'photo-hover': hover }]} data-image-slot={name} data-image-final={image.arrived ? 'true' : 'false'}>
+      <Picture src={image.src} alt={image.alt} widths={usable} sizes={sizes} formats={['avif', 'webp']} fallbackFormat="jpg" loading={eager ? 'eager' : 'lazy'} decoding={eager ? 'sync' : 'async'} fetchpriority={eager ? 'high' : undefined} style={`object-position: ${image.focal}`} />
+    </div>
+    <figcaption class="caption">{caption}</figcaption>
+  </figure>
+)}
+{image && !caption && (
   <div class:list={['photo', className, { 'photo-hover': hover }]} data-image-slot={name} data-image-final={image.arrived ? 'true' : 'false'}>
     <Picture
       src={image.src}
@@ -37,3 +47,7 @@ if (image && !usable.length) usable.push(image.src.width);
     />
   </div>
 )}
+
+<style>
+  .captioned { margin: 0; }
+</style>

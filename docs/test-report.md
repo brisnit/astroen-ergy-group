@@ -89,3 +89,18 @@ Re-tested after the white-first redesign, lifestyle image slots and motion syste
 - About hero report: on the live site the image loaded and decoded in both Chrome and WebKit at desktop and mobile widths, so the empty rectangle could not be reproduced. The frame now sizes its `<picture>` explicitly (`display: block; height: 100%`) and uses a neutral pale-gray backing instead of beige.
 
 Not verified: Firefox; Safari on real iOS devices (WebKit was tested headless); screen readers; final generated images, because none have been supplied yet.
+
+## Warm palette (2026-10-21)
+
+Terracotta #C56848, copper #96482F, amber #E8B44D, peach #F8E3D7 and coral #E78F78 were added with fixed roles (documented in `src/styles/global.css`). Contrast was measured for every pairing in use:
+
+| Use | Pair | Ratio |
+|---|---|---|
+| Warm small text: captions, icons, labels | Copper on white / peach | 6.43 / 5.19 |
+| Peach panels | Navy text on peach | 13.76 |
+| Search highlights | Navy text on amber tint | 8.98 or more |
+| Process markers, chart details on dark | Coral on dark teal | 6.07 |
+| Principle numerals, loop icon on dark | Amber on dark teal | 7.82 |
+| Graphic accents only (dashes, rules, rings) | Terracotta on white / peach | 3.85 / 3.11 (non-text, 3:1 minimum) |
+
+Not used, because they fail AA for text: terracotta as text, white text on terracotta (3.85), amber or coral on white, and amber on the teal band (3.30). The primary button is still teal with white text (6.26). Lighthouse colour-contrast passed on home, About, Funding, Approach and search, with an accessibility score of 100 on each.

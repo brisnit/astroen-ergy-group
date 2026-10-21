@@ -40,8 +40,8 @@ const H = headingLevel;
     position: absolute; left: 0; top: 0; z-index: 1;
     width: 2.5rem; height: 2.5rem; border-radius: 50%;
     display: grid; place-items: center;
-    background: var(--white); border: 2px solid var(--accent);
-    font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-strong);
+    background: var(--white); border: 2px solid var(--terracotta);
+    font-family: var(--font-mono); font-size: 0.8rem; color: var(--copper);
   }
   .step-name { font-size: 1.3rem; margin: 0.35rem 0 0.35rem; }
   .step-summary { margin: 0 0 0.4rem; color: var(--ink); }
@@ -52,7 +52,7 @@ const H = headingLevel;
   .step-link :global(.step-arrow) { display: inline-block; vertical-align: -0.15em; margin-left: 0.3rem; transition: transform 180ms ease; }
   .step-link:hover :global(.step-arrow) { transform: translateX(3px); }
   .loop-note { display: flex; gap: 0.6rem; align-items: center; margin: 0.5rem 0 0; color: var(--ink-2); font-size: 0.95rem; max-width: none; }
-  .loop-icon { font-size: 1.2rem; color: var(--accent); }
+  .loop-icon { font-size: 1.2rem; color: var(--terracotta); }
 
   @media (min-width: 60rem) {
     .steps { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1.5rem; }
@@ -63,10 +63,10 @@ const H = headingLevel;
 
   /* Dark variant */
   .process-dark .connector { background: var(--on-dark-accent); }
-  .process-dark .marker { background: var(--dark); border-color: var(--on-dark-accent); color: var(--on-dark-accent); }
+  .process-dark .marker { background: var(--dark); border-color: var(--coral); color: var(--coral); }
   .process-dark .step-summary { color: var(--on-dark); }
   .process-dark :is(.step-detail, .loop-note) { color: var(--on-dark-muted); }
-  .process-dark .loop-icon { color: var(--on-dark-accent); }
+  .process-dark .loop-icon { color: var(--amber); }
   .process-dark .step-link { color: var(--on-dark-accent); }
   .process-dark .step-link:hover { color: #fff; }
 

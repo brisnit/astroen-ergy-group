@@ -27,6 +27,18 @@
   --on-dark-accent: #aee5d8; /* 10.6:1 on dark; never on white */
   --on-teal-muted: #d7eeea;  /* 5.2:1 on teal */
 
+  /* Warm accents. Each has a defined role; none is used for primary buttons.
+     Terracotta: primary warm accent, graphics only (rules, markers, dashes): 3.9:1 on white, so never small text.
+     Copper: warm small text and icons: 6.4:1 on white, 5.2:1 on peach.
+     Amber: small highlights; navy text on it (9.0:1) or graphics on dark (7.8:1), never on white.
+     Peach: occasional editorial surfaces with navy text (13.8:1).
+     Coral: graphic details on dark teal (6.1:1), never on white. */
+  --terracotta: #c56848;
+  --copper: #96482f;
+  --amber: #e8b44d;
+  --peach: #f8e3d7;
+  --coral: #e78f78;
+
   --error: #b42318;
   --error-tint: #fdf0ee;
   --success: #0b6b47;
@@ -233,9 +245,9 @@ a:hover { color: var(--accent-strong); text-decoration-thickness: 2px; }
   content: '';
   position: absolute; left: 0; top: 0.62em;
   width: 0.75rem; height: 2px;
-  background: var(--accent);
+  background: var(--terracotta);
 }
-:is(.section-dark, .section-night) .check-list li::before { background: var(--on-dark-accent); }
+:is(.section-dark, .section-night) .check-list li::before { background: var(--coral); }
 
 .numbered { list-style: none; counter-reset: n; padding: 0; margin: 0; display: grid; gap: 1rem; }
 .numbered li { counter-increment: n; position: relative; padding-left: 2.5rem; }
@@ -262,6 +274,18 @@ a:hover { color: var(--accent-strong); text-decoration-thickness: 2px; }
   border-radius: 0 var(--radius) var(--radius) 0;
 }
 .note p:last-child { margin-bottom: 0; }
+.note-warm { background: var(--peach); border-left-color: var(--terracotta); color: var(--ink); }
+.note-warm :is(h2, h3) { color: var(--ink); }
+.section-peach { background: var(--peach); color: var(--ink); }
+
+/* Image captions: small copper text with a terracotta rule. */
+.caption {
+  display: flex; align-items: baseline; gap: 0.75rem;
+  margin: 0.85rem 0 0; font-size: 0.9rem; color: var(--copper); max-width: 60ch;
+}
+.caption::before { content: ''; flex: none; width: 1.75rem; height: 2px; background: var(--terracotta); transform: translateY(-0.3em); }
+:is(.section-dark, .section-night) .caption { color: var(--coral); }
+:is(.section-dark, .section-night) .caption::before { background: var(--coral); }
 
 /* Interactive card: subtle lift, border change, arrow nudge. */
 .card-link {
