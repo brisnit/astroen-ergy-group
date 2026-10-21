@@ -149,16 +149,15 @@ a:hover { color: var(--accent-strong); text-decoration-thickness: 2px; }
 .section-teal :focus-visible { box-shadow: 0 0 0 2px var(--accent), 0 0 0 4.5px #fff; }
 
 .eyebrow {
-  display: inline-flex; align-items: center; gap: 0.6rem;
+  display: block;
   margin: 0 0 1.1rem;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.858rem;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--accent);
 }
-.eyebrow::before { content: ''; width: 1.5rem; height: 2px; background: currentColor; }
 :is(.section-dark, .section-night) .eyebrow { color: var(--on-dark-accent); }
 .section-teal .eyebrow { color: var(--on-teal-muted); }
 
