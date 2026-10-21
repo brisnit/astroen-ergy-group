@@ -1,6 +1,6 @@
 # Test report
 
-**Date:** 2026-10-20 · **Build:** production (`npm run build` and `npm start`), tested locally on Node 24 and headless Chrome.
+**Date:** 2026-10-20 · **Build:** production, tested locally on Node 24 and headless Chrome. (Originally tested on the Node adapter; after the move to `@astrojs/vercel`, the bundled Vercel function was re-tested directly against every server route.)
 
 ## Summary
 

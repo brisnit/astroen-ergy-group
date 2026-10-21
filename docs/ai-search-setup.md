@@ -47,7 +47,7 @@ Visitor query ─▶ /search/?q=…  (server-rendered, shareable URL, works with
    ASK_RATE_LIMIT_PER_MIN=8           # per visitor IP, default 8
    ```
 
-3. Restart the server (`npm start`).
+3. Redeploy (Vercel → Deployments → Redeploy), because environment variable changes only apply to new deployments.
 4. Check: search for "What does Eco-1 monitor?". An answer with source links should appear above the results. Then search for something off-topic, such as "pizza recipe". There should be no AI answer, and the page should say nothing matches.
 
 ## 3. Model and request settings
@@ -98,10 +98,12 @@ Spam protection: a hidden honeypot field, a minimum time-to-submit check, a 5-pe
 
 ## 6. Deployment notes
 
-- This is a Node server (`@astrojs/node`, standalone mode). Build with `npm run build`, run with `npm start`. Set `HOST`, `PORT` and `SITE_URL`.
-- Content pages are prerendered static HTML. Only `/search/`, `/contact/` and `/api/*` run on the server.
-- Rate limits and the answer cache are in-memory, per process. With several instances, move them to a shared store (for example Redis) or add limits at the CDN or load balancer.
-- If the server sits behind a proxy, make sure it forwards `X-Forwarded-For` so rate limits apply per visitor.
+- Hosting is Vercel, through `@astrojs/vercel`. `astro build` writes `.vercel/output` (Build Output API), which Vercel deploys as is.
+- **Vercel project settings:** Framework Preset **Astro**; Build Command `astro build` (also set in `vercel.json`); **Output Directory override off**. A `dist` or `dist/client` override makes Vercel serve a folder without the function, which is what caused the earlier 404.
+- Content pages are prerendered static HTML. Only `/search/`, `/contact/` and `/api/*` run in the function (Node.js runtime, 30 s max duration, set in `astro.config.mjs`).
+- Set `SITE_URL` to the production origin so canonical links, the sitemap and Open Graph tags are correct.
+- Rate limits and the answer cache are in memory, per function instance. Vercel runs several instances, so limits are approximate. For strict limits, use a shared store (for example Upstash Redis) or Vercel Firewall rate-limiting rules on `/api/ask` and `/api/contact`.
+- Vercel sets `X-Forwarded-For`, which the rate limiter uses to identify visitors.
 
 ## 7. Updating content
 

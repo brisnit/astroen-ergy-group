@@ -2,7 +2,7 @@
 
 The rebuilt website for Astro Energy Group: building energy assessments, energy modeling, integrated design/build, Eco-1 monitoring and verification, and funding and incentive support.
 
-Built with [Astro](https://astro.build) 7 and TypeScript. Content pages are static HTML. A small Node server handles search, the contact form and AI answers.
+Built with [Astro](https://astro.build) 7 and TypeScript. Deployed on Vercel with `@astrojs/vercel`. Content pages are prerendered static HTML. Search, the contact form and AI answers run as a Vercel Function.
 
 ## Quick start
 
@@ -12,12 +12,11 @@ cp .env.example .env     # optional: add API keys (see docs/ai-search-setup.md)
 npm run dev              # http://localhost:4321
 ```
 
-Production:
+Production (Vercel):
 
-```bash
-npm run build
-HOST=0.0.0.0 PORT=8080 SITE_URL=https://www.astroenergygroup.com npm start
-```
+`npm run build` writes `.vercel/output` (Vercel's Build Output API): static pages and assets in `static/`, and one function serving `/search/`, `/contact/`, `/api/ask` and `/api/contact`. Pushing to `main` deploys. In the Vercel project settings, the Framework Preset should be **Astro** and **Output Directory must not be overridden** (see `docs/ai-search-setup.md` §6). Set environment variables in Vercel → Settings → Environment Variables.
+
+To run the production build locally, use `vercel dev` (Vercel CLI); `npm run dev` is enough for most work.
 
 Checks:
 
