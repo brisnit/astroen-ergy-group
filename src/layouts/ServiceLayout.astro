@@ -6,14 +6,18 @@ import PageHero from '../components/PageHero.astro';
 import Terms from '../components/Terms.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
+import LifestyleImage from '../components/LifestyleImage.astro';
+import type { SlotName } from '../data/images.ts';
 import type { Page, Section } from '../data/types.ts';
 import { solutionPages } from '../data/solutions.ts';
 
 interface Props {
   page: Page;
+  /** A plain image, or a lifestyle manifest slot (preferred). */
   image?: { src: ImageMetadata; alt: string };
+  imageSlot?: SlotName;
 }
-const { page, image } = Astro.props;
+const { page, image, imageSlot } = Astro.props;
 
 const byId = (id: string) => page.sections.find((s) => s.id === id);
 const problem = byId('problem');
@@ -55,10 +59,15 @@ const serviceSchema = {
       <a class="btn btn-primary" href={`/contact/?topic=${page.id}`}>Discuss your building <Icon name="arrow" /></a>
       {next && <a class="btn btn-secondary" href="#next">What comes next</a>}
     </div>
-    {image && (
+    {imageSlot && (
+      <Fragment slot="aside">
+        <LifestyleImage name={imageSlot} eager sizes="(min-width: 60rem) 42vw, 100vw" widths={[480, 800, 1200, 1600]} class="hero-photo" />
+      </Fragment>
+    )}
+    {!imageSlot && image && (
       <Fragment slot="aside">
         <div class="photo hero-photo">
-          <Picture src={image.src} alt={image.alt} widths={[480, 760, 1100]} sizes="(min-width: 60rem) 40vw, 100vw" formats={['avif', 'webp']} loading="eager" fetchpriority="high" />
+          <Picture src={image.src} alt={image.alt} widths={[480, 800, 1200, 1600]} sizes="(min-width: 60rem) 42vw, 100vw" formats={['avif', 'webp']} loading="eager" fetchpriority="high" />
         </div>
       </Fragment>
     )}
@@ -72,21 +81,21 @@ const serviceSchema = {
       </nav>
 
       {problem && (
-        <section id="problem" class="svc-section svc-problem" aria-labelledby="h-problem">
+        <section id="problem" class="svc-section svc-problem" aria-labelledby="h-problem" data-reveal>
           <h2 id="h-problem">{problem.heading}</h2>
           {problem.body?.map((p, i) => <p class={i === 0 ? 'lead-para' : undefined}>{p}</p>)}
         </section>
       )}
 
       {audience && (
-        <section id="audience" class="svc-section" aria-labelledby="h-audience">
+        <section id="audience" class="svc-section" aria-labelledby="h-audience" data-reveal>
           <h2 id="h-audience">{audience.heading}</h2>
           <ul class="check-list">{audience.list?.map((l) => <li>{l}</li>)}</ul>
         </section>
       )}
 
       {work && (
-        <section id="work" class="svc-section" aria-labelledby="h-work">
+        <section id="work" class="svc-section" aria-labelledby="h-work" data-reveal>
           <h2 id="h-work">{work.heading}</h2>
           {work.body?.map((p) => <p>{p}</p>)}
           {work.list && <ol class="numbered">{work.list.map((l) => <li>{l}</li>)}</ol>}
@@ -95,7 +104,7 @@ const serviceSchema = {
       )}
 
       {extras.map((s) => (
-        <section id={s.id} class="svc-section" aria-labelledby={`h-${s.id}`}>
+        <section id={s.id} class:list={['svc-section', { 'svc-note': s.id === 'expectations' }]} aria-labelledby={`h-${s.id}`} data-reveal>
           <h2 id={`h-${s.id}`}>{s.heading}</h2>
           {s.body?.map((p) => <p>{p}</p>)}
           {s.list && <ul class="check-list">{s.list.map((l) => <li>{l}</li>)}</ul>}
@@ -104,19 +113,19 @@ const serviceSchema = {
       ))}
 
       {deliverables && (
-        <section id="deliverables" class="svc-section svc-deliverables" aria-labelledby="h-deliverables">
+        <section id="deliverables" class="svc-section svc-deliverables section-dark" aria-labelledby="h-deliverables" data-reveal>
           <h2 id="h-deliverables">{deliverables.heading}</h2>
           <ul class="check-list">{deliverables.list?.map((l) => <li>{l}</li>)}</ul>
         </section>
       )}
 
       {next && (
-        <section id="next" class="svc-section" aria-labelledby="h-next">
+        <section id="next" class="svc-section" aria-labelledby="h-next" data-reveal>
           <h2 id="h-next">{next.heading}</h2>
           {next.body?.map((p) => <p>{p}</p>)}
           {next.list && <ul class="check-list">{next.list.map((l) => <li>{l}</li>)}</ul>}
           {nextPage && (
-            <a class="next-card" href={nextPage.url}>
+            <a class="next-card card-link" href={nextPage.url}>
               <span class="eyebrow">Next stage</span>
               <span class="next-title">{nextPage.title}</span>
               <span class="next-text">{nextPage.lede}</span>
@@ -138,12 +147,12 @@ const serviceSchema = {
     </aside>
   </div>
 
-  <section class="section-tight related" aria-labelledby="related-title">
+  <section class="section-tight related section-pale" aria-labelledby="related-title">
     <div class="wrap">
       <h2 id="related-title" class="related-title">Other solutions</h2>
-      <ul class="related-list">
+      <ul class="related-list" data-stagger>
         {related.map((p) => (
-          <li><a href={p.url}><span>{p.label}</span><Icon name="arrow" size={16} /></a></li>
+          <li><a class="card-link" href={p.url}><span>{p.label}</span><Icon name="arrow" size={16} class="arrow" /></a></li>
         ))}
       </ul>
     </div>
@@ -164,23 +173,28 @@ const serviceSchema = {
     .side-cta { position: sticky; top: calc(var(--header-h) + 1.5rem); }
   }
   .service-side { display: flex; flex-direction: column; gap: 1.25rem; }
-  .toc { border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1rem 1.25rem; background: var(--surface); }
+  .toc { border-radius: var(--radius-lg); padding: 1rem 1.25rem; background: var(--pale); }
   .toc-title { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 0.5rem; }
   .toc ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; }
   .toc a { display: inline-flex; min-height: 2.25rem; align-items: center; font-size: 0.95rem; }
   .svc-section { padding-top: var(--space-l); margin-top: var(--space-l); border-top: 1px solid var(--line); }
   .svc-section:first-of-type { border-top: 0; }
   .svc-section h2 { font-size: var(--step-2); }
+  .svc-section :global(.mv-figure), .svc-section :global(.table-scroll) { margin-top: 1.75rem; }
   .svc-problem { border-top: 0; margin-top: var(--space-m); padding-top: 0; }
   .lead-para { font-size: 1.2rem; line-height: 1.55; color: var(--ink); }
-  .svc-deliverables { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: var(--space-m); }
+  .svc-deliverables { border-radius: var(--radius-lg); padding: clamp(1.5rem, 1rem + 2vw, 2.5rem); border-top: 0; }
+  .svc-deliverables h2 { color: #fff; }
+  .svc-deliverables + .svc-section { border-top: 0; }
+  .svc-note { background: var(--pale); border-top: 0; border-left: 3px solid var(--accent); border-radius: 0 var(--radius-lg) var(--radius-lg) 0; padding: 1.5rem 1.75rem; }
+  .svc-note p:last-child { margin-bottom: 0; }
   .next-card {
     position: relative; display: grid; gap: 0.25rem;
     margin-top: 1.5rem; padding: 1.25rem 3.5rem 1.25rem 1.25rem;
     border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: var(--radius-lg);
     background: var(--surface); color: var(--ink); text-decoration: none;
   }
-  .next-card:hover { border-color: var(--accent); color: var(--ink); }
+  .next-card:hover { color: var(--ink); }
   .next-card .eyebrow { margin: 0; }
   .next-title { font-weight: 650; font-size: 1.2rem; }
   .next-text { color: var(--ink-2); font-size: 0.975rem; }
@@ -188,7 +202,7 @@ const serviceSchema = {
   .side-title { font-size: 1.15rem; }
   .side-cta .btn { width: 100%; }
   .side-ask { margin: 0.75rem 0 0; }
-  .related { border-top: 1px solid var(--line); }
+
   .related-title { font-size: var(--step-1); }
   .related-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
   .related-list a {
@@ -197,5 +211,6 @@ const serviceSchema = {
     border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
     color: var(--ink); text-decoration: none; font-weight: 580;
   }
-  .related-list a:hover { border-color: var(--accent); color: var(--accent-strong); }
+  .related-list a:hover { color: var(--accent-strong); }
+  .related-list :global(.arrow) { color: var(--accent); }
 </style>

@@ -5,48 +5,51 @@ export const goals = [
   {
     id: 'costs',
     title: 'Understand high energy costs',
-    text: 'Find out where your energy spend is going and why it keeps rising.',
+    text: 'See where your energy spend goes, and why it keeps rising.',
     href: '/solutions/energy-audits/',
-    cta: 'Start with an assessment',
+    cta: 'Assessments',
   },
   {
     id: 'equipment',
     title: 'Plan aging equipment upgrades',
-    text: 'Identify which systems are degrading and what to replace first.',
+    text: 'Find the systems that are degrading and decide what to replace first.',
     href: '/solutions/design-build/',
-    cta: 'See design/build',
+    cta: 'Design/build',
   },
   {
     id: 'performance',
     title: 'Improve building performance',
-    text: 'Compare upgrade options on a model before you spend capital.',
+    text: 'Compare upgrade options on a model before spending capital.',
     href: '/solutions/energy-modeling/',
-    cta: 'Explore energy modeling',
+    cta: 'Energy modeling',
   },
   {
     id: 'funding',
     title: 'Explore project funding',
-    text: 'Discuss financing options and incentives, and the documentation they need.',
+    text: 'Discuss financing options, incentives and the paperwork they need.',
     href: '/solutions/funding-incentives/',
-    cta: 'Review funding support',
+    cta: 'Funding support',
   },
   {
     id: 'verify',
     title: 'Verify improvements are working',
-    text: 'Measure equipment performance against the baseline, and keep it there.',
+    text: 'Measure performance against the baseline, and keep it there.',
     href: '/solutions/monitoring-verification/',
-    cta: 'See Eco-1 monitoring',
+    cta: 'Eco-1 monitoring',
   },
 ];
 
-export const askSuggestions = [
-  'Where should we start if our energy bills keep increasing?',
-  'What is the difference between an audit and energy modeling?',
-  'Can you help us plan upgrades for aging equipment?',
-  'What does Eco-1 monitor?',
-  'What funding options should we discuss?',
-  'Do you work with schools?',
+/** Short prompt labels for the Ask Astro panel; each runs the full question. */
+export const askPrompts = [
+  { label: 'Rising energy bills', q: 'Where should we start if our energy bills keep increasing?' },
+  { label: 'Audit vs. modeling', q: 'What is the difference between an audit and energy modeling?' },
+  { label: 'Aging equipment', q: 'Can you help us plan upgrades for aging equipment?' },
+  { label: 'What Eco-1 monitors', q: 'What does Eco-1 monitor?' },
+  { label: 'Funding options', q: 'What funding options should we discuss?' },
+  { label: 'Working with schools', q: 'Do you work with schools?' },
 ];
+
+export const askSuggestions = askPrompts.map((p) => p.q);
 
 export const home: Page = {
   id: 'home',

@@ -12,20 +12,20 @@ const [goals, adaptable, approvals] = page.sections;
 <BaseLayout title={page.metaTitle} description={page.description} crumbs={crumbs}>
   <PageHero eyebrow="Our approach" title="From assessment to verified results" lede={page.lede} crumbs={crumbs} />
 
-  <section class="section" aria-labelledby="steps-title">
+  <section class="section section-dark" aria-labelledby="steps-title">
     <div class="wrap">
-      <div class="section-head">
+      <div class="section-head" data-reveal>
         <p class="eyebrow">The five steps</p>
-        <h2 id="steps-title">Assess, prioritize, plan, implement, verify</h2>
+        <h2 id="steps-title" class="on-dark-h">Assess, prioritize, plan, implement, verify</h2>
         <p>Each step builds on the last, and each one connects to a service you can start with on its own.</p>
       </div>
-      <ProcessSteps detailed />
+      <ProcessSteps detailed tone="dark" />
     </div>
   </section>
 
-  <section class="section section-surface" aria-labelledby="h-goals" id={goals.id}>
+  <section class="section" aria-labelledby="h-goals" id={goals.id}>
     <div class="wrap split">
-      <div>
+      <div data-reveal>
         <p class="eyebrow">Project delivery model</p>
         <h2 id="h-goals">{goals.heading}</h2>
         <div id={adaptable.id}>
@@ -33,7 +33,7 @@ const [goals, adaptable, approvals] = page.sections;
           {adaptable.body?.map((b) => <p class="muted">{b}</p>)}
         </div>
       </div>
-      <div class="stack">
+      <div class="stack" data-reveal>
         <ol class="numbered goal-list">{goals.list?.map((g) => <li>{g}</li>)}</ol>
         <div class="note" id={approvals.id}>
           <h3>{approvals.heading}</h3>
@@ -43,14 +43,14 @@ const [goals, adaptable, approvals] = page.sections;
     </div>
   </section>
 
-  <section class="section" id="phases" aria-labelledby="phases-title">
-    <div class="wrap">
-      <div class="section-head">
+  <section class="section phases-section" id="phases" aria-labelledby="phases-title">
+    <div class="wrap rule-top">
+      <div class="section-head" data-reveal>
         <p class="eyebrow">Phase by phase</p>
         <h2 id="phases-title">What happens in each phase</h2>
         <p>The summary for each phase is shown below. Open a phase to see its full list of activities.</p>
       </div>
-      <ol class="phase-list">
+      <ol class="phase-list" data-stagger>
         {phases.map((p, i) => (
           <li class="phase" id={p.id}>
             <div class="phase-head">
@@ -71,7 +71,7 @@ const [goals, adaptable, approvals] = page.sections;
     </div>
   </section>
 
-  <section class="section section-sand" aria-labelledby="ppn-title">
+  <section class="section section-pale" aria-labelledby="ppn-title">
     <div class="wrap split">
       <div>
         <p class="eyebrow">Who does the work</p>
@@ -95,10 +95,13 @@ const [goals, adaptable, approvals] = page.sections;
 
 <style>
   .goal-list { font-size: 1.1rem; }
+  .phases-section { padding-top: 0; }
+
   .adapt-h { font-size: 1.05rem; margin-top: 1.5rem; }
   .note h3 { margin-bottom: 0.35rem; }
   .phase-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
-  .phase { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; }
+  .on-dark-h { color: #fff; }
+  .phase { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; }
   .phase-head { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); gap: 1rem; }
   .phase-num { width: 2.25rem; height: 2.25rem; border-radius: 50%; display: grid; place-items: center; background: var(--accent-tint); color: var(--accent-strong); font-family: var(--font-mono); font-size: 0.9rem; }
   .phase h3 { margin: 0.2rem 0 0.3rem; font-size: 1.3rem; }

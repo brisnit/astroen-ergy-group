@@ -2,6 +2,8 @@
 import '@fontsource-variable/public-sans/wght.css';
 import '@fontsource/ibm-plex-mono/latin-500.css';
 import '../styles/global.css';
+// Preloaded so the main text face is ready at first paint (avoids reflow when it swaps in).
+import publicSansLatin from '@fontsource-variable/public-sans/files/public-sans-latin-wght-normal.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { company } from '../data/company.ts';
@@ -77,7 +79,8 @@ const jsonLdText = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, follow" />}
-    <meta name="theme-color" content="#faf8f4" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="preload" href={publicSansLatin} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
@@ -102,6 +105,9 @@ const jsonLdText = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
       <slot />
     </main>
     <Footer />
+    <script>
+      import '../scripts/motion.ts';
+    </script>
   </body>
 </html>
 

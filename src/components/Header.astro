@@ -75,10 +75,12 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
 <style>
   .site-header {
     position: sticky; top: 0; z-index: 50;
-    background: rgb(250 248 244 / 96%);
-    backdrop-filter: saturate(1.4) blur(8px);
-    border-bottom: 1px solid var(--line);
+    background: rgb(255 255 255 / 97%);
+    backdrop-filter: saturate(1.4) blur(10px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 220ms ease, box-shadow 220ms ease;
   }
+  .site-header:global(.is-scrolled) { border-bottom-color: var(--line); box-shadow: 0 6px 24px -14px rgb(16 29 43 / 28%); }
   .header-inner {
     display: flex; align-items: center; gap: 1rem;
     min-height: var(--header-h);
@@ -92,8 +94,9 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     padding: 0.5rem 0.65rem;
     color: var(--ink); text-decoration: none; font-weight: 560; font-size: 0.975rem;
     border-radius: var(--radius);
+    transition: background-color 180ms ease, color 180ms ease;
   }
-  .nav-link:hover { color: var(--accent-strong); text-decoration: none; background: var(--sand); }
+  .nav-link:hover { color: var(--accent-strong); text-decoration: none; background: var(--pale); }
   .nav-link[aria-current='page'] { color: var(--accent-strong); box-shadow: inset 0 -2px 0 var(--accent); border-radius: 0; }
   .has-sub .nav-link { padding-right: 0.15rem; }
   .sub-toggle {
@@ -101,7 +104,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     width: 2rem; height: 2.75rem;
     background: none; border: 0; color: var(--ink-2); cursor: pointer; border-radius: var(--radius);
   }
-  .sub-toggle:hover { color: var(--ink); background: var(--sand); }
+  .sub-toggle:hover { color: var(--ink); background: var(--pale); }
   .sub-toggle :global(svg) { transition: transform 0.15s ease; }
   .sub-toggle[aria-expanded='true'] :global(svg) { transform: rotate(180deg); }
 
@@ -122,7 +125,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     padding: 0.65rem 0.75rem; border-radius: var(--radius);
     color: var(--ink); text-decoration: none;
   }
-  .submenu a:not(.sub-all):hover { background: var(--sand); }
+  .submenu a:not(.sub-all):hover { background: var(--pale); }
   .submenu a[aria-current='page'] .sub-label { color: var(--accent-strong); }
   .sub-label { font-weight: 600; }
   .sub-desc { font-size: 0.875rem; color: var(--ink-2); line-height: 1.4; }
@@ -136,7 +139,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     color: var(--ink); text-decoration: none; font-weight: 560; font-size: 0.975rem;
     background: none; border: 0; cursor: pointer;
   }
-  .search-toggle:hover, .search-toggle[aria-expanded='true'] { background: var(--sand); color: var(--ink); text-decoration: none; }
+  .search-toggle:hover, .search-toggle[aria-expanded='true'] { background: var(--pale); color: var(--ink); text-decoration: none; }
   .header-cta { white-space: nowrap; padding-inline: 1rem; font-size: 0.95rem; }
   .menu-toggle {
     display: none;
@@ -148,7 +151,7 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
   .menu-toggle[aria-expanded='true'] :global(.icon-open) { display: none; }
   .menu-toggle[aria-expanded='true'] :global(.icon-close) { display: block; }
 
-  .header-search { border-top: 1px solid var(--line); padding-block: 0.9rem; background: var(--paper); }
+  .header-search { border-top: 1px solid var(--line); padding-block: 0.9rem; background: var(--white); }
   .nav-search { display: none; }
 
   @media (max-width: 63.99rem) {

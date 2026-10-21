@@ -1,8 +1,7 @@
 ---
 import ServiceLayout from '../../layouts/ServiceLayout.astro';
 import { designBuild } from '../../data/solutions.ts';
-import photo from '../../assets/photos/rooftop-hvac.jpg';
 ---
-<ServiceLayout page={designBuild} image={{ src: photo, alt: 'Rows of condensing units on a commercial building rooftop' }}>
+<ServiceLayout imageSlot="field-assessment" page={designBuild}>
   <p slot="after-contracts" class="see-also">The full phase-by-phase activity list is on <a href="/approach/#phases">Our Approach</a>.</p>
 </ServiceLayout>

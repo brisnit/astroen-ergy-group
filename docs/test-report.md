@@ -73,3 +73,19 @@
 - **Field performance:** the Lighthouse figures are lab measurements on localhost. Real-world Core Web Vitals depend on hosting and CDN, so measure again after deployment.
 - **Business facts:** the address, phone, services, Eco-1, PPN and funding partners are source-derived and unconfirmed. See `docs/content-verification.md`.
 - **Hosting:** the site was not deployed. Production `SITE_URL`, HTTPS and the DNS cut-over from the legacy (compromised) site still need to be done.
+
+## Visual refinement (2026-10-21)
+
+Re-tested after the white-first redesign, lifestyle image slots and motion system, using the production Vercel build served through a local stand-in for Vercel routing:
+- Unit tests 24/24 pass and type check is clean. Browser interaction tests 24/24 pass, and motion tests 16/16 pass:
+  - With JavaScript disabled, all 45 animated elements are visible.
+  - With reduced motion, nothing is hidden and the process line is static.
+  - Stages reveal in sequence after the connecting line draws, and the M&V chart draws once with its "Illustrative only" caption kept.
+  - Hover effects carry no leftover stagger delay, and the header gains its border and shadow after scrolling.
+- Page sweep across 18 URLs at 360, 768 and 1440 px, with real scrolling and motion on: no console errors, no broken image requests, no horizontal overflow, no reveal elements stuck hidden, and 43 links and all anchors valid.
+- Lighthouse (mobile emulation) on home, About, healthcare and contact: Performance 99–100, Accessibility 100, Best Practices 100, SEO 100, colour-contrast audit passed, CLS 0 after preloading the main font.
+- Background share at 1440 px (footer included as dark): home 66% white, 27% dark, 5% teal, 2% pale. Inner pages range from 51–73% white; the About page also has a 12% photo band.
+- Image pipeline: a test PNG named `astro-education-life.png` was converted to a real VP8 WebP by `npm run images:webp`, picked up by the build (`data-image-final="true"`, output files named `astro-education-life.*`), then removed.
+- About hero report: on the live site the image loaded and decoded in both Chrome and WebKit at desktop and mobile widths, so the empty rectangle could not be reproduced. The frame now sizes its `<picture>` explicitly (`display: block; height: 100%`) and uses a neutral pale-gray backing instead of beige.
+
+Not verified: Firefox; Safari on real iOS devices (WebKit was tested headless); screen readers; final generated images, because none have been supplied yet.

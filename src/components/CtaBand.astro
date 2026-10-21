@@ -14,9 +14,10 @@ const {
 } = Astro.props;
 const href = query ? `/contact/?${query}` : '/contact/';
 ---
-<section class="cta-band section-night" aria-labelledby="cta-title">
-  <div class="wrap cta-inner">
+<section class="cta-band section-teal" aria-labelledby="cta-title">
+  <div class="wrap cta-inner" data-reveal>
     <div>
+      <p class="eyebrow">Next step</p>
       <h2 id="cta-title">{title}</h2>
       <p class="lede">{text}</p>
     </div>
@@ -27,8 +28,9 @@ const href = query ? `/contact/?${query}` : '/contact/';
   </div>
 </section>
 <style>
-  .cta-band { padding-block: var(--space-xl); background: var(--night-2); }
-  .cta-inner { display: grid; gap: var(--space-m); align-items: center; }
+  .cta-band { padding-block: clamp(3.5rem, 2.5rem + 4vw, 6rem); }
+  .cta-inner { display: grid; gap: var(--space-m); align-items: end; }
   @media (min-width: 56rem) { .cta-inner { grid-template-columns: 1.5fr 1fr; } .cta-inner .btn-row { justify-content: flex-end; } }
-  h2 { max-width: 20ch; }
+  h2 { max-width: 20ch; color: #fff; }
+  .lede { margin-bottom: 0; }
 </style>

@@ -50,8 +50,17 @@ docs/
   ai-search-setup.md                Configuring AI answers and contact delivery
   test-report.md                    What was tested and what remains
   photo-credits.md                  Image sources and licences
+  lifestyle-image-prompts.md        Prompts and crop guidance for the eight lifestyle images
 tests/                              node:test suites
 ```
+
+## Lifestyle images
+
+Eight image slots are defined in `src/data/images.ts`: filename, placement, aspect ratio, focal point, alt text and fallback. Each slot also reports whether its final image has arrived. To add an image, save it in `src/assets/lifestyle/` under its exact filename (for example `astro-home-hero.webp`). A PNG or JPG with the same basename also works; run `npm run images:webp` to convert it to a real WebP. The next build uses the image automatically. Until then each slot shows a licensed fallback photo. Prompts and crop guidance are in `docs/lifestyle-image-prompts.md`.
+
+## Motion
+
+Entrances, staggers, the process line and the chart drawing live in `src/scripts/motion.ts` and the `[data-reveal]`, `[data-stagger]` and `[data-draw]` rules in `src/styles/global.css`. Content is only hidden for animation when that script runs and the visitor allows motion. With JavaScript off or `prefers-reduced-motion`, everything is visible and static.
 
 ## Editing content
 

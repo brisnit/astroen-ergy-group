@@ -29,7 +29,7 @@ Status key:
 | 12 | Geography / service area | PPN "resources across the nation" | Not shown. Copy says "based in El Cajon… tell us where your facilities are" | Withheld | Confirm where Astro works (San Diego County, California, nationwide?). |
 | 13 | Supply-side review (utility rate structure and on-site generation options) | `audits.html` | Energy Audits page, "What the work involves" | Shown — confirm | Confirm this is still part of the assessment service. |
 | 14 | Project Delivery Model phases and activities | Five flowchart images (conceptualization, design, construction documents, construction, closeout) | Our Approach, phase by phase | Shown — confirm | Transcribed from images. Confirm the activities still reflect current practice. |
-| 15 | Photography | — | All pages | Proposal | Licensed stock (Unsplash and Pexels; see `docs/photo-credits.md`), labelled in the footer as illustrative and not Astro projects. Replace with Astro's own project photography when available, with permission from building owners. One image (an identifiable NIH building) was deliberately not used. |
+| 15 | Photography | — | All pages | Proposal | Eight lifestyle slots (`src/data/images.ts`) currently show licensed stock fallbacks (Unsplash and Pexels; see `docs/photo-credits.md`) until generated images are supplied (`docs/lifestyle-image-prompts.md`). The footer labels all photography as illustrative. Generated or stock images must never be described as Astro staff, clients, offices or projects. Replace with Astro's own photography when available, with permission. One stock image (an identifiable NIH building) was deliberately not used. |
 
 ## 2. Withheld claims (do not publish without evidence)
 

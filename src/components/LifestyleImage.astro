@@ -1,0 +1,39 @@
+---
+import { Picture } from 'astro:assets';
+import { resolveImage, type SlotName } from '../data/images.ts';
+
+/**
+ * Renders a manifest image slot through Astro's image pipeline (AVIF/WebP, responsive widths).
+ * Renders nothing if the slot has no final image and its fallback is disabled.
+ */
+interface Props {
+  /** Manifest slot name. (Not `slot`, which Astro reserves.) */
+  name: SlotName;
+  sizes: string;
+  widths?: number[];
+  eager?: boolean;
+  allowFallback?: boolean;
+  class?: string;
+  hover?: boolean;
+}
+const { name, sizes, widths = [480, 800, 1200, 1600], eager = false, allowFallback = true, class: className, hover = false } = Astro.props;
+const image = resolveImage(name, { allowFallback });
+const usable = image ? widths.filter((w) => w <= image.src.width) : [];
+if (image && !usable.length) usable.push(image.src.width);
+---
+{image && (
+  <div class:list={['photo', className, { 'photo-hover': hover }]} data-image-slot={name} data-image-final={image.arrived ? 'true' : 'false'}>
+    <Picture
+      src={image.src}
+      alt={image.alt}
+      widths={usable}
+      sizes={sizes}
+      formats={['avif', 'webp']}
+      fallbackFormat="jpg"
+      loading={eager ? 'eager' : 'lazy'}
+      decoding={eager ? 'sync' : 'async'}
+      fetchpriority={eager ? 'high' : undefined}
+      style={`object-position: ${image.focal}`}
+    />
+  </div>
+)}

@@ -1,61 +1,98 @@
 ---
-import { Picture } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PageHero from '../components/PageHero.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
+import LifestyleImage from '../components/LifestyleImage.astro';
 import { about as page, company } from '../data/company.ts';
-import photo from '../assets/photos/rooftop-hvac.jpg';
 
 const crumbs = [{ label: 'About', href: '/about/' }];
 const [whatWeDo, outcomes, principles, location] = page.sections;
+
+// Restrained icons for "What we focus on improving", in the same order as the content.
+const outcomeIcons = ['cycle', 'chart', 'sliders', 'pulse', 'people', 'trend'] as const;
+// Short labels for the four principles; the text itself comes from the content collection.
+const principleTitles = ['Evidence first', 'One coordinated team', 'Your decision at each step', 'Results measured afterwards'];
 ---
 <BaseLayout title={page.metaTitle} description={page.description} crumbs={crumbs}>
-  <PageHero eyebrow="About" title={page.title} lede={page.lede} crumbs={crumbs}>
-    <Fragment slot="aside">
-      <div class="photo about-photo">
-        <Picture src={photo} alt="Rows of condensing units on a commercial building rooftop" widths={[480, 760, 1100]} sizes="(min-width: 60rem) 40vw, 100vw" formats={['avif', 'webp']} loading="eager" />
+  <section class="about-hero" aria-labelledby="about-title">
+    <div class="wrap">
+      <Breadcrumbs items={crumbs} />
+      <div class="about-hero-grid">
+        <div class="about-hero-copy">
+          <p class="eyebrow">About</p>
+          <h1 id="about-title">About Astro Energy Group</h1>
+          <p class="lede">{page.lede}</p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="/contact/">Discuss your building <Icon name="arrow" /></a>
+            <a class="btn btn-secondary" href="/approach/">How we work</a>
+          </div>
+        </div>
+        <LifestyleImage name="about-collaboration" eager sizes="(min-width: 60rem) 50vw, 100vw" widths={[480, 800, 1200, 1600]} class="about-photo" />
       </div>
-    </Fragment>
-  </PageHero>
+    </div>
+  </section>
 
   <section class="section" id={whatWeDo.id} aria-labelledby="h-what">
-    <div class="wrap split">
-      <div>
+    <div class="wrap editorial rule-top">
+      <div data-reveal>
         <p class="eyebrow">What we do</p>
         <h2 id="h-what">Existing buildings, evaluated and improved</h2>
       </div>
-      <div class="big-copy">
-        {whatWeDo.body?.map((b) => <p>{b}</p>)}
+      <div class="editorial-body" data-reveal>
+        {whatWeDo.body?.map((b, i) => <p class={i === 0 ? 'lead-para' : undefined}>{b}</p>)}
         <a class="link-arrow" href="/solutions/">Explore our solutions <Icon name="arrow" size={16} /></a>
       </div>
     </div>
   </section>
 
-  <section class="section section-surface" aria-labelledby="h-outcomes" id={outcomes.id}>
-    <div class="wrap split split-even">
-      <div>
-        <h2 id="h-outcomes">{outcomes.heading}</h2>
-        <ul class="check-list">{outcomes.list?.map((o) => <li>{o}</li>)}</ul>
+  <LifestyleImage name="building-life" sizes="100vw" widths={[800, 1200, 1600, 2000, 2400]} class="about-band" />
+
+  <section class="section section-dark principles" id={principles.id} aria-labelledby="h-principles">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">{principles.heading}</p>
+        <h2 id="h-principles">Four principles behind every project</h2>
       </div>
-      <div id={principles.id}>
-        <h2>{principles.heading}</h2>
-        <ol class="numbered">{principles.list?.map((p) => <li>{p}</li>)}</ol>
-      </div>
+      <ol class="principle-list" data-stagger>
+        {principles.list?.map((p, i) => (
+          <li>
+            <span class="p-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{principleTitles[i]}</h3>
+            <p>{p}</p>
+          </li>
+        ))}
+      </ol>
     </div>
   </section>
 
-  <section class="section" id={location.id} aria-labelledby="h-where">
+  <section class="section" id={outcomes.id} aria-labelledby="h-outcomes">
     <div class="wrap split">
-      <div>
-        <p class="eyebrow">Location</p>
-        <h2 id="h-where">{location.heading}</h2>
+      <div data-reveal>
+        <p class="eyebrow">Focus</p>
+        <h2 id="h-outcomes">{outcomes.heading}</h2>
+        <p class="muted">The outcomes we keep in view, from the first assessment to ongoing monitoring.</p>
       </div>
-      <div>
+      <ul class="outcome-list" data-stagger>
+        {outcomes.list?.map((o, i) => (
+          <li><span class="o-icon"><Icon name={outcomeIcons[i] ?? 'chart'} size={22} /></span><span>{o.replace(/\.$/, '')}</span></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section location" id={location.id} aria-labelledby="h-where">
+    <div class="wrap location-grid rule-top">
+      <div data-reveal>
+        <p class="eyebrow">{location.heading}</p>
+        <h2 id="h-where" class="place">{company.address.city}, California</h2>
+        <p class="place-sub">{company.areaDescription.split(",")[0]}</p>
+      </div>
+      <div class="location-body" data-reveal>
         {location.body?.map((b) => <p>{b}</p>)}
         <address class="addr">
-          <Icon name="pin" size={20} />
-          <span>{company.address.street}<br />{company.address.city}, {company.address.region} {company.address.postalCode}<br /><a href={company.phoneHref}>{company.phone}</a></span>
+          <span>{company.address.street}<br />{company.address.city}, {company.address.region} {company.address.postalCode}</span>
+          <a href={company.phoneHref}><Icon name="phone" size={18} /> {company.phone}</a>
         </address>
       </div>
     </div>
@@ -64,8 +101,43 @@ const [whatWeDo, outcomes, principles, location] = page.sections;
   <CtaBand />
 </BaseLayout>
 <style>
-  .about-photo { aspect-ratio: 4 / 3; }
-  .big-copy p { font-size: 1.15rem; }
-  .addr { display: flex; gap: 0.75rem; font-style: normal; padding: 1.25rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); max-width: 24rem; line-height: 1.7; }
-  .addr :global(svg) { flex: none; color: var(--accent); margin-top: 0.25rem; }
+  .about-hero { padding-block: clamp(1.75rem, 1rem + 2.5vw, 3rem) var(--space-l); }
+  .about-hero-grid { display: grid; gap: var(--space-l); align-items: center; }
+  @media (min-width: 60rem) { .about-hero-grid { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: var(--space-xl); } }
+  .about-hero-copy h1 { max-width: 11ch; }
+  .about-hero-copy .btn-row { margin-top: 1.75rem; }
+  .about-hero-grid :global(.about-photo) { aspect-ratio: 4 / 3; }
+
+  .editorial { display: grid; gap: var(--space-m) var(--space-xl); }
+  .editorial.rule-top { padding-top: var(--space-l); }
+  @media (min-width: 56rem) { .editorial { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } }
+  .editorial h2 { max-width: 14ch; }
+  .lead-para { font-size: clamp(1.2rem, 1.05rem + 0.6vw, 1.45rem); line-height: 1.5; color: var(--ink); letter-spacing: -0.01em; }
+  .editorial-body p:not(.lead-para) { color: var(--ink-2); font-size: 1.1rem; }
+
+  :global(.about-band) { border-radius: 0; aspect-ratio: 21 / 9; max-height: 34rem; width: 100%; }
+  @media (max-width: 40rem) { :global(.about-band) { aspect-ratio: 4 / 3; } }
+
+  .principles h2 { color: #fff; }
+  .principle-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; background: rgb(255 255 255 / 12%); border-radius: var(--radius-lg); overflow: hidden; }
+  @media (min-width: 48rem) { .principle-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 72rem) { .principle-list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .principle-list li { background: var(--dark); padding: 1.75rem 1.5rem 2rem; }
+  .p-num { display: block; font-family: var(--font-mono); font-size: 0.85rem; color: var(--on-dark-accent); margin-bottom: 2.25rem; }
+  .principle-list h3 { color: #fff; font-size: 1.3rem; margin-bottom: 0.6rem; }
+  .principle-list p { color: var(--on-dark-muted); margin: 0; }
+
+  .outcome-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+  @media (min-width: 40rem) { .outcome-list { grid-template-columns: 1fr 1fr; column-gap: 2rem; } }
+  .outcome-list li { display: flex; align-items: center; gap: 1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--line); font-size: 1.075rem; font-weight: 560; }
+  .o-icon { flex: none; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: var(--accent-tint); color: var(--accent); }
+
+  .location { padding-top: 0; }
+  .location-grid { display: grid; gap: var(--space-m) var(--space-xl); align-items: end; }
+  @media (min-width: 56rem) { .location-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
+  .place { font-size: clamp(2.4rem, 1.5rem + 4vw, 4.75rem); letter-spacing: -0.04em; line-height: 0.98; margin-bottom: 0.4rem; }
+  .place-sub { font-size: var(--step-1); color: var(--accent); font-weight: 600; margin: 0; }
+  .location-body p { color: var(--ink-2); font-size: 1.1rem; }
+  .addr { display: grid; gap: 0.5rem; font-style: normal; margin-top: 1.25rem; line-height: 1.6; }
+  .addr a { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 640; font-size: 1.15rem; min-height: 2.5rem; }
 </style>

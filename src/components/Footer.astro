@@ -4,7 +4,7 @@ import { solutionLinks, industryLinks } from '../data/nav.ts';
 import { company } from '../data/company.ts';
 const year = new Date().getFullYear();
 ---
-<footer class="site-footer section-night">
+<footer class="site-footer section-footer">
   <div class="wrap footer-grid">
     <div class="footer-brand">
       <Logo tone="light" />
@@ -36,7 +36,7 @@ const year = new Date().getFullYear();
   <div class="wrap footer-base">
     <p>© {year} {company.name}. All rights reserved.</p>
     <p>Ask Astro answers are generated from this website’s content only. They are general information, not engineering, legal or financial advice.</p>
-    <p>Photography: Unsplash and Pexels contributors; images are illustrative and do not depict Astro projects.</p>
+    <p>Photography is illustrative and does not depict Astro staff, clients, offices or projects.</p>
   </div>
 </footer>
 
@@ -48,12 +48,13 @@ const year = new Date().getFullYear();
     .footer-grid { grid-template-columns: 1.6fr 1fr 1fr 1fr; }
     .footer-brand { grid-column: auto; }
   }
-  .footer-brand p { margin-top: 1.25rem; }
-  address { font-style: normal; color: var(--night-muted); line-height: 1.7; }
-  .footer-col h2 { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--night-muted); margin-bottom: 1rem; }
+  .footer-brand p { margin-top: 1.25rem; color: var(--on-dark-muted); }
+  address { font-style: normal; color: var(--on-dark-muted); line-height: 1.7; }
+  .footer-col h2 { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--on-dark-muted); margin-bottom: 1rem; }
   .footer-col ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.15rem; }
-  .footer-col a { display: inline-flex; min-height: 2.25rem; align-items: center; color: var(--night-ink); text-decoration: none; }
+  .footer-col a { display: inline-flex; min-height: 2.25rem; align-items: center; color: var(--on-dark); text-decoration: none; }
   .footer-col a:hover { color: #fff; text-decoration: underline; }
-  .footer-base { margin-top: var(--space-l); padding-top: var(--space-m); border-top: 1px solid #22344d; display: grid; gap: 0.25rem; }
-  .footer-base p { margin: 0; font-size: 0.85rem; color: var(--night-muted); max-width: none; }
+  .footer-base { margin-top: var(--space-l); padding-top: var(--space-m); display: grid; gap: 0.25rem; position: relative; }
+  .footer-base::before { content: ''; position: absolute; top: 0; left: var(--gutter); right: var(--gutter); height: 1px; background: rgb(255 255 255 / 14%); }
+  .footer-base p { margin: 0; font-size: 0.85rem; color: var(--on-dark-muted); max-width: none; }
 </style>

@@ -10,7 +10,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "check": "astro check",
-    "test": "node --test tests/*.test.ts"
+    "test": "node --test tests/*.test.ts",
+    "images:webp": "node scripts/lifestyle-to-webp.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "sharp": "^0.35.5",
     "typescript": "^5.9.3"
   }
 }
