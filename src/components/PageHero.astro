@@ -1,0 +1,31 @@
+---
+import Breadcrumbs, { type Crumb } from './Breadcrumbs.astro';
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lede?: string;
+  crumbs?: Crumb[];
+}
+const { eyebrow, title, lede, crumbs } = Astro.props;
+---
+<section class="page-hero">
+  <div class="wrap">
+    {crumbs && <Breadcrumbs items={crumbs} />}
+    <div class="hero-grid">
+      <div class="hero-copy">
+        {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+        <h1>{title}</h1>
+        {lede && <p class="lede">{lede}</p>}
+        <slot />
+      </div>
+      {Astro.slots.has('aside') && <div class="hero-aside"><slot name="aside" /></div>}
+    </div>
+  </div>
+</section>
+<style>
+  .page-hero { padding-block: clamp(2rem, 1.5rem + 3vw, 4rem) clamp(2.5rem, 2rem + 3vw, 4.5rem); border-bottom: 1px solid var(--line); }
+  .hero-grid { display: grid; gap: var(--space-l); align-items: end; }
+  @media (min-width: 60rem) { .hero-grid:has(.hero-aside) { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); } }
+  .hero-copy h1 { max-width: 18ch; }
+  .hero-copy :global(.btn-row) { margin-top: 1.75rem; }
+</style>

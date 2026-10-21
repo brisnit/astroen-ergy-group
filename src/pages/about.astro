@@ -1,0 +1,71 @@
+---
+import { Picture } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { about as page, company } from '../data/company.ts';
+import photo from '../assets/photos/rooftop-hvac.jpg';
+
+const crumbs = [{ label: 'About', href: '/about/' }];
+const [whatWeDo, outcomes, principles, location] = page.sections;
+---
+<BaseLayout title={page.metaTitle} description={page.description} crumbs={crumbs}>
+  <PageHero eyebrow="About" title={page.title} lede={page.lede} crumbs={crumbs}>
+    <Fragment slot="aside">
+      <div class="photo about-photo">
+        <Picture src={photo} alt="Rows of condensing units on a commercial building rooftop" widths={[480, 760, 1100]} sizes="(min-width: 60rem) 40vw, 100vw" formats={['avif', 'webp']} loading="eager" />
+      </div>
+    </Fragment>
+  </PageHero>
+
+  <section class="section" id={whatWeDo.id} aria-labelledby="h-what">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow">What we do</p>
+        <h2 id="h-what">Existing buildings, evaluated and improved</h2>
+      </div>
+      <div class="big-copy">
+        {whatWeDo.body?.map((b) => <p>{b}</p>)}
+        <a class="link-arrow" href="/solutions/">Explore our solutions <Icon name="arrow" size={16} /></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-surface" aria-labelledby="h-outcomes" id={outcomes.id}>
+    <div class="wrap split split-even">
+      <div>
+        <h2 id="h-outcomes">{outcomes.heading}</h2>
+        <ul class="check-list">{outcomes.list?.map((o) => <li>{o}</li>)}</ul>
+      </div>
+      <div id={principles.id}>
+        <h2>{principles.heading}</h2>
+        <ol class="numbered">{principles.list?.map((p) => <li>{p}</li>)}</ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id={location.id} aria-labelledby="h-where">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow">Location</p>
+        <h2 id="h-where">{location.heading}</h2>
+      </div>
+      <div>
+        {location.body?.map((b) => <p>{b}</p>)}
+        <address class="addr">
+          <Icon name="pin" size={20} />
+          <span>{company.address.street}<br />{company.address.city}, {company.address.region} {company.address.postalCode}<br /><a href={company.phoneHref}>{company.phone}</a></span>
+        </address>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+<style>
+  .about-photo { aspect-ratio: 4 / 3; }
+  .big-copy p { font-size: 1.15rem; }
+  .addr { display: flex; gap: 0.75rem; font-style: normal; padding: 1.25rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); max-width: 24rem; line-height: 1.7; }
+  .addr :global(svg) { flex: none; color: var(--accent); margin-top: 0.25rem; }
+</style>

@@ -1,0 +1,29 @@
+---
+import Icon from './Icon.astro';
+import type { Faq } from '../data/types.ts';
+interface Props { items: Faq[] }
+const { items } = Astro.props;
+---
+<div class="accordion" data-faq>
+  {items.map((f) => (
+    <details id={`faq-${f.id}`}>
+      <summary><span>{f.question}</span><Icon name="chevron" class="chev" /></summary>
+      <div class="acc-body">
+        {f.answer.map((p) => <p>{p}</p>)}
+        {f.link && <a class="link-arrow" href={f.link.href}>{f.link.label} <Icon name="arrow" size={16} /></a>}
+      </div>
+    </details>
+  ))}
+</div>
+<script>
+  // Open the matching FAQ when arriving from a search result link like /#faq-funding.
+  const openFromHash = () => {
+    const el = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (el instanceof HTMLDetailsElement) {
+      el.open = true;
+      el.querySelector('summary')?.focus({ preventScroll: true });
+    }
+  };
+  openFromHash();
+  window.addEventListener('hashchange', openFromHash);
+</script>

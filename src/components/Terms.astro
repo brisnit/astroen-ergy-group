@@ -1,0 +1,15 @@
+---
+import type { Term } from '../data/types.ts';
+interface Props { terms: Term[]; title?: string }
+const { terms, title = 'Key terms' } = Astro.props;
+---
+<aside class="panel panel-sand terms-panel" id="terms" aria-labelledby="terms-title">
+  <h2 id="terms-title" class="terms-title">{title}</h2>
+  <dl class="terms">
+    {terms.map((t) => (<div><dt><dfn>{t.term}</dfn></dt><dd>{t.definition}</dd></div>))}
+  </dl>
+</aside>
+<style>
+  .terms-title { font-size: var(--step-1); }
+  dfn { font-style: normal; }
+</style>

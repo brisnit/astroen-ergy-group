@@ -1,0 +1,49 @@
+---
+/**
+ * Conceptual measurement-and-verification chart. Illustrative only: no values,
+ * no implied savings. The accessible description says so.
+ */
+---
+<figure class="mv-figure">
+  <svg viewBox="0 0 560 300" role="img" aria-labelledby="mv-title mv-desc" class="mv-svg">
+    <title id="mv-title">How measurement and verification works</title>
+    <desc id="mv-desc">An illustrative chart, without values. Energy use is measured before improvements to set a baseline. After improvements, measured use is compared with what the baseline predicts; the difference is the verified change. Ongoing monitoring flags any drift back toward the baseline.</desc>
+    <defs>
+      <pattern id="mv-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="6" stroke="#0b6b66" stroke-width="1.4" opacity="0.35" />
+      </pattern>
+    </defs>
+    <!-- axes -->
+    <line x1="48" y1="250" x2="540" y2="250" stroke="#c4bbab" stroke-width="1.5" />
+    <line x1="48" y1="30" x2="48" y2="250" stroke="#c4bbab" stroke-width="1.5" />
+    <text transform="translate(32 140) rotate(-90)" text-anchor="middle" font-size="12" fill="#44515f">Energy use</text>
+    <text x="540" y="272" text-anchor="end" font-size="12" fill="#44515f">Time</text>
+    <!-- phase dividers -->
+    <line x1="220" y1="40" x2="220" y2="250" stroke="#ddd6ca" stroke-dasharray="4 4" />
+    <line x1="300" y1="40" x2="300" y2="250" stroke="#ddd6ca" stroke-dasharray="4 4" />
+    <text x="134" y="56" text-anchor="middle" font-size="12" font-family="IBM Plex Mono, monospace" fill="#44515f">BEFORE</text>
+    <text x="260" y="56" text-anchor="middle" font-size="12" font-family="IBM Plex Mono, monospace" fill="#44515f">DURING</text>
+    <text x="420" y="56" text-anchor="middle" font-size="12" font-family="IBM Plex Mono, monospace" fill="#44515f">AFTER</text>
+    <!-- verified difference area -->
+    <path d="M300 104 C 340 98, 380 110, 420 102 S 500 100, 540 104 L 540 170 C 500 168, 470 176, 420 168 S 340 160, 300 166 Z" fill="url(#mv-hatch)" />
+    <!-- baseline (measured then projected) -->
+    <path d="M48 110 C 90 96, 130 118, 170 104 S 210 100, 220 106" fill="none" stroke="#0e1b2c" stroke-width="2.5" />
+    <path d="M220 106 C 250 112, 270 98, 300 104 C 340 98, 380 110, 420 102 S 500 100, 540 104" fill="none" stroke="#0e1b2c" stroke-width="2" stroke-dasharray="6 5" />
+    <!-- measured after -->
+    <path d="M220 106 C 245 120, 265 150, 300 166 C 340 160, 380 172, 420 168 S 470 176, 500 166 S 525 150, 540 150" fill="none" stroke="#0b6b66" stroke-width="3" />
+    <!-- drift marker -->
+    <circle cx="528" cy="153" r="6" fill="#faf8f4" stroke="#b4652a" stroke-width="2" />
+    <!-- labels -->
+    <text x="60" y="92" font-size="12.5" fill="#0e1b2c" font-weight="600">Measured baseline</text>
+    <text x="352" y="92" font-size="12.5" fill="#0e1b2c">Baseline projected forward</text>
+    <text x="304" y="200" font-size="12.5" fill="#0b6b66" font-weight="600">Measured after improvements</text>
+    <text x="336" y="140" font-size="12.5" fill="#08504c" font-weight="600">Verified change</text>
+    <text x="548" y="190" font-size="11.5" fill="#8a4a1c" text-anchor="end">Drift flagged</text>
+  </svg>
+  <figcaption>Illustrative only. Actual results depend on the building and the measures installed, and are reported from measured data.</figcaption>
+</figure>
+<style>
+  .mv-figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1rem 1rem 1.25rem; }
+  .mv-svg { width: 100%; height: auto; font-family: var(--font-sans); }
+  figcaption { margin-top: 0.5rem; font-size: 0.875rem; color: var(--ink-2); }
+</style>

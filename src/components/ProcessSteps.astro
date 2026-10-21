@@ -1,0 +1,59 @@
+---
+import Icon from './Icon.astro';
+import { steps } from '../data/approach.ts';
+interface Props { detailed?: boolean; headingLevel?: 'h3' | 'h4' }
+const { detailed = false, headingLevel = 'h3' } = Astro.props;
+const H = headingLevel;
+---
+<div class="process">
+  <ol class="steps" id="steps">
+    {steps.map((s, i) => (
+      <li class="step">
+        <div class="marker" aria-hidden="true"><span>{String(i + 1).padStart(2, '0')}</span></div>
+        <H class="step-name">{s.name}</H>
+        <p class="step-summary">{s.summary}</p>
+        {detailed && <p class="step-detail">{s.detail}</p>}
+        <a class="step-link" href={s.service.href}>{s.service.label.split(' ').slice(0, -1).join(' ')} <span class="nowrap">{s.service.label.split(' ').at(-1)}<Icon name="arrow" size={15} class="step-arrow" /></span></a>
+      </li>
+    ))}
+  </ol>
+  <p class="loop-note"><span class="loop-icon" aria-hidden="true">↺</span> Verification results become the baseline for the next round of assessment.</p>
+</div>
+
+<style>
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  .step { position: relative; padding: 0 0 1.75rem 3.5rem; }
+  .step::before {
+    content: ''; position: absolute; left: 1.15rem; top: 2.5rem; bottom: 0.25rem;
+    width: 2px; background: linear-gradient(var(--accent), var(--line));
+  }
+  .step:last-child::before { display: none; }
+  .marker {
+    position: absolute; left: 0; top: 0;
+    width: 2.4rem; height: 2.4rem; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--surface); border: 2px solid var(--accent);
+    font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-strong);
+  }
+  .step-name { font-size: 1.25rem; margin: 0.35rem 0 0.35rem; }
+  .step-summary { margin: 0 0 0.4rem; color: var(--ink); }
+  .step-detail { margin: 0 0 0.5rem; color: var(--ink-2); font-size: 0.95rem; }
+  .step-link { display: inline-block; padding-block: 0.3rem; font-size: 0.925rem; font-weight: 620; text-decoration: none; line-height: 1.4; }
+  .step-link:hover { text-decoration: underline; }
+  .nowrap { white-space: nowrap; }
+  .step-link :global(.step-arrow) { display: inline-block; vertical-align: -0.15em; margin-left: 0.3rem; }
+  .loop-note { display: flex; gap: 0.6rem; align-items: center; margin: 0.5rem 0 0; color: var(--ink-2); font-size: 0.95rem; max-width: none; }
+  .loop-icon { font-size: 1.2rem; color: var(--accent); }
+
+  @media (min-width: 60rem) {
+    .steps { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1.5rem; }
+    .step { padding: 3.5rem 0 0; }
+    .step::before { left: 2.6rem; right: -1.5rem; top: 1.15rem; bottom: auto; width: auto; height: 2px; background: linear-gradient(90deg, var(--accent), var(--line)); }
+    .step:last-child::before { display: none; }
+    .loop-note { margin-top: 1.5rem; }
+  }
+  :global(.section-night) .marker { background: var(--night); border-color: var(--night-accent); color: var(--night-accent); }
+  :global(.section-night) .step-summary { color: var(--night-ink); }
+  :global(.section-night) .step-detail, :global(.section-night) .loop-note { color: var(--night-muted); }
+  :global(.section-night) .loop-icon { color: var(--night-accent); }
+</style>

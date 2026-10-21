@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { approach as page, phases } from '../data/approach.ts';
+
+const crumbs = [{ label: 'Our Approach', href: '/approach/' }];
+const [goals, adaptable, approvals] = page.sections;
+---
+<BaseLayout title={page.metaTitle} description={page.description} crumbs={crumbs}>
+  <PageHero eyebrow="Our approach" title="From assessment to verified results" lede={page.lede} crumbs={crumbs} />
+
+  <section class="section" aria-labelledby="steps-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">The five steps</p>
+        <h2 id="steps-title">Assess, prioritize, plan, implement, verify</h2>
+        <p>Each step builds on the last, and each one connects to a service you can start with on its own.</p>
+      </div>
+      <ProcessSteps detailed />
+    </div>
+  </section>
+
+  <section class="section section-surface" aria-labelledby="h-goals" id={goals.id}>
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow">Project delivery model</p>
+        <h2 id="h-goals">{goals.heading}</h2>
+        <div id={adaptable.id}>
+          <h3 class="adapt-h">{adaptable.heading}</h3>
+          {adaptable.body?.map((b) => <p class="muted">{b}</p>)}
+        </div>
+      </div>
+      <div class="stack">
+        <ol class="numbered goal-list">{goals.list?.map((g) => <li>{g}</li>)}</ol>
+        <div class="note" id={approvals.id}>
+          <h3>{approvals.heading}</h3>
+          {approvals.body?.map((b) => <p>{b}</p>)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="phases" aria-labelledby="phases-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Phase by phase</p>
+        <h2 id="phases-title">What happens in each phase</h2>
+        <p>The summary for each phase is shown below. Open a phase to see its full list of activities.</p>
+      </div>
+      <ol class="phase-list">
+        {phases.map((p, i) => (
+          <li class="phase" id={p.id}>
+            <div class="phase-head">
+              <span class="phase-num" aria-hidden="true">{i + 1}</span>
+              <div>
+                <h3>{p.name}</h3>
+                <p>{p.summary}</p>
+                <p class="gate"><span class="gate-label">Ends with</span> {p.gate}</p>
+              </div>
+            </div>
+            <details class="phase-detail">
+              <summary><span>{p.activities.length} activities in this phase</span><Icon name="chevron" class="chev" /></summary>
+              <ul class="activity-list">{p.activities.map((a) => <li>{a}</li>)}</ul>
+            </details>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section-sand" aria-labelledby="ppn-title">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow">Who does the work</p>
+        <h2 id="ppn-title">One team, drawn from a vetted network</h2>
+      </div>
+      <div>
+        <p>Projects are delivered by an integrated design/build team. Astro’s Preferred Provider Network supplies design professionals, consultants and contractors selected through a competitive process and trained on this delivery model.</p>
+        <a class="link-arrow" href="/solutions/design-build/#ppn">About the Preferred Provider Network <Icon name="arrow" size={16} /></a>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<script>
+  // Arriving from a legacy phase URL (e.g. /designphase.html -> /approach/#phase-design) opens that phase.
+  const target = location.hash ? document.getElementById(location.hash.slice(1)) : null;
+  target?.querySelector('details')?.setAttribute('open', '');
+</script>
+
+<style>
+  .goal-list { font-size: 1.1rem; }
+  .adapt-h { font-size: 1.05rem; margin-top: 1.5rem; }
+  .note h3 { margin-bottom: 0.35rem; }
+  .phase-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+  .phase { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; }
+  .phase-head { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); gap: 1rem; }
+  .phase-num { width: 2.25rem; height: 2.25rem; border-radius: 50%; display: grid; place-items: center; background: var(--accent-tint); color: var(--accent-strong); font-family: var(--font-mono); font-size: 0.9rem; }
+  .phase h3 { margin: 0.2rem 0 0.3rem; font-size: 1.3rem; }
+  .phase-head p { margin: 0 0 0.4rem; color: var(--ink-2); }
+  .gate { font-size: 0.925rem; }
+  .gate-label { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-strong); margin-right: 0.35rem; }
+  .phase-detail { margin: 0.75rem 0 0 3.5rem; border-top: 1px solid var(--line); }
+  .phase-detail summary { list-style: none; display: flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; cursor: pointer; font-weight: 600; color: var(--accent-strong); }
+  .phase-detail summary::-webkit-details-marker { display: none; }
+  .phase-detail summary :global(.chev) { transition: transform 0.2s ease; }
+  .phase-detail[open] summary :global(.chev) { transform: rotate(180deg); }
+  .activity-list { columns: 16rem 3; column-gap: 2rem; margin: 0.5rem 0 0.5rem; padding-left: 1.1rem; color: var(--ink-2); font-size: 0.95rem; }
+  .activity-list li { break-inside: avoid; margin-bottom: 0.35rem; }
+  @media (max-width: 40rem) { .phase-detail { margin-left: 0; } }
+</style>

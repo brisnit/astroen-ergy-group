@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import ProcessSteps from '../../components/ProcessSteps.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Icon from '../../components/Icon.astro';
+import { solutionPages, solutionsOverview as page } from '../../data/solutions.ts';
+
+const crumbs = [{ label: 'Solutions', href: '/solutions/' }];
+const connect = page.sections[0];
+---
+<BaseLayout title={page.metaTitle} description={page.description} crumbs={crumbs}>
+  <PageHero eyebrow="Solutions" title="Five connected services, one path to better buildings" lede={page.lede} crumbs={crumbs} />
+
+  <section class="section-tight" aria-label="Services">
+    <div class="wrap">
+      <ol class="svc-rows">
+        {solutionPages.map((p, i) => {
+          const audience = p.sections.find((s) => s.id === 'audience')?.list?.slice(0, 2) ?? [];
+          return (
+            <li class="svc-row">
+              <span class="svc-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+              <div class="svc-main">
+                <h2><a href={p.url}>{p.title}</a></h2>
+                <p>{p.lede}</p>
+              </div>
+              <div class="svc-for">
+                <p class="for-label">Often a fit for</p>
+                <ul>{audience.map((a) => <li>{a}</li>)}</ul>
+              </div>
+              <a class="svc-go link-arrow" href={p.url} aria-hidden="true" tabindex="-1">Learn more <Icon name="arrow" /></a>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section-sand" id={connect.id} aria-labelledby="connect-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">How they fit together</p>
+        <h2 id="connect-title">{connect.heading}</h2>
+        {connect.body?.map((b) => <p>{b}</p>)}
+      </div>
+      <ProcessSteps />
+    </div>
+  </section>
+
+  <CtaBand title="Not sure where to start?" text="Tell us about your buildings and what you want to improve. We’ll recommend a sensible first step." />
+</BaseLayout>
+
+<style>
+  .svc-rows { list-style: none; margin: 0; padding: 0; }
+  .svc-row {
+    position: relative;
+    display: grid; gap: 0.75rem 2rem;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    padding-block: 2rem; border-bottom: 1px solid var(--line);
+  }
+  .svc-row:first-child { padding-top: 0.5rem; }
+  .svc-num { font-family: var(--font-mono); color: var(--accent); font-size: 0.9rem; padding-top: 0.45rem; }
+  .svc-main h2 { font-size: var(--step-2); margin-bottom: 0.4rem; }
+  .svc-main h2 a { color: var(--ink); text-decoration: none; }
+  .svc-main h2 a::after { content: ''; position: absolute; inset: 0; }
+  .svc-row:hover .svc-main h2 a { color: var(--accent-strong); text-decoration: underline; }
+  .svc-main h2 a:focus-visible { box-shadow: none; }
+  .svc-row:has(h2 a:focus-visible) { box-shadow: var(--focus); border-radius: var(--radius); }
+  .svc-main p { margin: 0; color: var(--ink-2); }
+  .svc-for { grid-column: 2; }
+  .for-label { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 0.4rem; }
+  .svc-for ul { margin: 0; padding-left: 1.1rem; color: var(--ink-2); font-size: 0.95rem; }
+  .svc-go { grid-column: 2; font-size: 0.95rem; }
+  @media (min-width: 60rem) {
+    .svc-row { grid-template-columns: 3rem minmax(0, 1.2fr) minmax(0, 1fr) auto; align-items: start; }
+    .svc-for, .svc-go { grid-column: auto; }
+    .svc-go { padding-top: 0.5rem; }
+  }
+</style>

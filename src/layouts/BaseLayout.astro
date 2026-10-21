@@ -1,0 +1,110 @@
+---
+import '@fontsource-variable/public-sans/wght.css';
+import '@fontsource/ibm-plex-mono/latin-500.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { company } from '../data/company.ts';
+import type { Crumb } from '../components/Breadcrumbs.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Breadcrumb trail for structured data (visible crumbs are rendered by the page). */
+  crumbs?: Crumb[];
+  /** Extra JSON-LD objects for this page. */
+  schema?: Record<string, unknown>[];
+  noindex?: boolean;
+  ogImage?: string;
+}
+
+const { title, description, crumbs, schema = [], noindex = false, ogImage = '/og-default.jpg' } = Astro.props;
+const site = Astro.site ?? new URL('https://www.astroenergygroup.com');
+const canonical = new URL(Astro.url.pathname, site).href;
+const ogImageUrl = new URL(ogImage, site).href;
+
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${site.origin}/#organization`,
+  name: company.name,
+  url: site.origin + '/',
+  telephone: `+1-${company.phone}`,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: company.address.street,
+    addressLocality: company.address.city,
+    addressRegion: company.address.region,
+    postalCode: company.address.postalCode,
+    addressCountry: company.address.country,
+  },
+};
+const website = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${site.origin}/#website`,
+  name: company.name,
+  url: site.origin + '/',
+  publisher: { '@id': `${site.origin}/#organization` },
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: `${site.origin}/search/?q={search_term_string}`,
+    'query-input': 'required name=search_term_string',
+  },
+};
+const breadcrumbSchema = crumbs?.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [{ label: 'Home', href: '/' }, ...crumbs].map((c, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: c.label,
+        item: new URL(c.href, site).href,
+      })),
+    }
+  : null;
+const jsonLd = [organization, website, ...(breadcrumbSchema ? [breadcrumbSchema] : []), ...schema];
+// Escape "<" so content can never close the script element.
+const jsonLdText = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
+---
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <meta name="theme-color" content="#faf8f4" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={company.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script type="application/ld+json" set:html={jsonLdText} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <Header />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  main:focus { outline: none; }
+</style>

@@ -1,0 +1,82 @@
+---
+import Icon from './Icon.astro';
+
+/**
+ * The Ask Astro search form. A plain GET form to /search/, so it works without JavaScript
+ * and produces shareable URLs.
+ */
+interface Props {
+  id: string;
+  variant?: 'hero' | 'compact' | 'page';
+  value?: string;
+  autofocus?: boolean;
+}
+const { id, variant = 'compact', value = '', autofocus = false } = Astro.props;
+const placeholder =
+  variant === 'compact' ? 'Search or ask a question' : 'e.g. Why do our energy bills keep rising?';
+const hintId = `${id}-hint`;
+---
+<form class:list={['ask-form', `ask-${variant}`]} role="search" action="/search/" method="get" aria-label="Ask Astro">
+  <label for={id} class:list={[variant === 'compact' ? 'visually-hidden' : 'ask-label']}>
+    <span class="ask-title">Ask Astro</span>
+    {variant !== 'compact' && <span class="ask-sub">Ask a question or search the site</span>}
+  </label>
+  <div class="ask-field">
+    <Icon name="search" size={20} class="ask-icon" />
+    <input
+      id={id}
+      type="search"
+      name="q"
+      value={value}
+      maxlength="200"
+      placeholder={placeholder}
+      autocomplete="off"
+      enterkeyhint="search"
+      spellcheck="true"
+      required
+      autofocus={autofocus}
+      aria-describedby={variant !== 'compact' ? hintId : undefined}
+    />
+    <button class="btn btn-primary ask-submit" type="submit">
+      <span>{variant === 'compact' ? 'Search' : 'Ask'}</span>
+    </button>
+  </div>
+  {variant !== 'compact' && (
+    <p id={hintId} class="ask-hint">Answers come only from this website. No sign-up needed, and please don’t include account numbers or other sensitive details.</p>
+  )}
+</form>
+
+<style>
+  .ask-form { width: 100%; }
+  .ask-label { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; margin-bottom: 0.6rem; }
+  .ask-title { font-weight: 680; font-size: 1.05rem; }
+  .ask-sub { color: var(--ink-2); font-size: 0.95rem; }
+  .ask-field {
+    position: relative;
+    display: flex; align-items: center; gap: 0.5rem;
+    background: var(--surface);
+    border: 1.5px solid var(--input-line);
+    border-radius: var(--radius-lg);
+    padding: 0.35rem 0.35rem 0.35rem 0.9rem;
+    box-shadow: var(--shadow);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .ask-field:focus-within { border-color: var(--accent); box-shadow: 0 0 0 4px rgb(11 107 102 / 16%), var(--shadow); }
+  .ask-field :global(.ask-icon) { flex: none; color: var(--ink-3); }
+  .ask-field input {
+    flex: 1; min-width: 0;
+    border: 0; box-shadow: none; background: transparent;
+    padding: 0.55rem 0.25rem; min-height: 2.75rem;
+    font-size: 1.0625rem;
+  }
+  .ask-field input:focus-visible { box-shadow: none; outline: none; }
+  .ask-field input::-webkit-search-cancel-button { cursor: pointer; }
+  .ask-submit { flex: none; min-height: 2.75rem; padding-inline: 1.15rem; }
+  .ask-hint { margin: 0.6rem 0 0; font-size: 0.875rem; color: var(--ink-2); }
+  .ask-compact .ask-field { box-shadow: none; border-radius: var(--radius); }
+  .ask-hero .ask-field { padding-block: 0.45rem; }
+  .ask-hero .ask-field input { font-size: 1.125rem; }
+  @media (max-width: 30rem) {
+    .ask-field input::placeholder { font-size: 0.95rem; }
+  }
+</style>

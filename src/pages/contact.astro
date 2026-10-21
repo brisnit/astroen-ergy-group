@@ -1,0 +1,314 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import { contactPage as page, company } from '../data/company.ts';
+import {
+  BUILDING_TYPES,
+  TOPICS,
+  emptyValues,
+  handleSubmission,
+  type ContactErrors,
+  type ContactValues,
+  type SubmitOutcome,
+} from '../lib/contact.ts';
+import { contactLimiter } from '../lib/limiters.ts';
+import { clientKey } from '../lib/rate-limit.ts';
+
+export const prerender = false;
+
+let values: ContactValues = emptyValues();
+let outcome: SubmitOutcome | null = null;
+
+if (Astro.request.method === 'POST') {
+  const form = await Astro.request.formData();
+  const source = Object.fromEntries([...form.entries()].map(([k, v]) => [k, typeof v === 'string' ? v : '']));
+  const rate = contactLimiter.check(clientKey(Astro.request, Astro.clientAddress));
+  ({ values, outcome } = await handleSubmission(source, rate.allowed));
+  Astro.response.status = outcome.status === 'sent' ? 200 : outcome.status === 'invalid' ? 422 : 200;
+} else {
+  // Carry a selected service or industry into the form, e.g. /contact/?topic=energy-audits
+  const topic = Astro.url.searchParams.get('topic') ?? '';
+  const building = Astro.url.searchParams.get('building') ?? '';
+  if (TOPICS.some((t) => t.value === topic)) values.topic = topic;
+  if ((BUILDING_TYPES as readonly string[]).includes(building)) values.buildingType = building;
+}
+Astro.response.headers.set('Cache-Control', 'no-store');
+
+const errors: ContactErrors = outcome?.status === 'invalid' ? outcome.errors : {};
+const sent = outcome?.status === 'sent';
+if (sent) values = emptyValues();
+const startedAt = Date.now();
+const crumbs = [{ label: 'Contact', href: '/contact/' }];
+const [direct, next, privacy] = page.sections;
+
+const err = (f: keyof ContactValues) => errors[f];
+const describedBy = (f: string, hint = false) => [hint ? `${f}-hint` : '', `${f}-error`].filter(Boolean).join(' ');
+---
+<BaseLayout title={page.metaTitle} description={page.description} crumbs={crumbs}>
+  <PageHero eyebrow="Contact" title={page.title} lede={page.lede} crumbs={crumbs} />
+
+  <section class="section-tight">
+    <div class="wrap contact-grid">
+      <div class="form-col">
+        <div id="form-status" class="form-status" tabindex="-1" role="status" aria-live="polite" data-form-status>
+          {sent && (
+            <div class="status status-success">
+              <h2>Thank you. Your inquiry has been sent.</h2>
+              <p>We’ll be in touch using the contact details you provided.</p>
+            </div>
+          )}
+          {outcome?.status === 'invalid' && (
+            <div class="status status-error" role="alert">
+              <h2>Please check {Object.keys(errors).length === 1 ? 'one field' : `${Object.keys(errors).length} fields`}</h2>
+              <ul>{Object.entries(errors).map(([f, m]) => <li><a href={`#${f}`}>{m}</a></li>)}</ul>
+            </div>
+          )}
+          {outcome?.status === 'unconfigured' && (
+            <div class="status status-info" role="alert">
+              <h2>Your message was not sent</h2>
+              <p>Online inquiries aren’t connected yet. Please call us at <a href={company.phoneHref}>{company.phone}</a>. Your entries are still in the form below.</p>
+            </div>
+          )}
+          {(outcome?.status === 'failed' || outcome?.status === 'rejected') && (
+            <div class="status status-error" role="alert">
+              <h2>Your message was not sent</h2>
+              <p>Something went wrong on our side. Please try again in a moment, or call <a href={company.phoneHref}>{company.phone}</a>. Your entries are still in the form.</p>
+            </div>
+          )}
+          {outcome?.status === 'rate_limited' && (
+            <div class="status status-error" role="alert">
+              <h2>Too many attempts</h2>
+              <p>Please wait a few minutes before trying again, or call <a href={company.phoneHref}>{company.phone}</a>.</p>
+            </div>
+          )}
+        </div>
+
+        <form method="post" action="/contact/" class="contact-form" novalidate data-contact-form>
+          <p class="req-note">All fields are required unless marked optional.</p>
+
+          <div class="row-2">
+            <div class="field">
+              <label for="name">Name</label>
+              <input id="name" name="name" type="text" autocomplete="name" required maxlength="100" value={values.name} aria-invalid={err('name') ? 'true' : undefined} aria-describedby={describedBy('name')} />
+              <p class="field-error" id="name-error">{err('name')}</p>
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required maxlength="254" value={values.email} aria-invalid={err('email') ? 'true' : undefined} aria-describedby={describedBy('email')} />
+              <p class="field-error" id="email-error">{err('email')}</p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="organization">Organization</label>
+            <input id="organization" name="organization" type="text" autocomplete="organization" required maxlength="150" value={values.organization} aria-invalid={err('organization') ? 'true' : undefined} aria-describedby={describedBy('organization')} />
+            <p class="field-error" id="organization-error">{err('organization')}</p>
+          </div>
+
+          <div class="field">
+            <label for="improve">What would you like to improve?</label>
+            <p class="hint" id="improve-hint">For example: rising energy bills, an aging chiller plant, comfort complaints, or verifying a recent upgrade. Please don’t include account numbers.</p>
+            <textarea id="improve" name="improve" required maxlength="2000" rows="5" aria-invalid={err('improve') ? 'true' : undefined} aria-describedby={describedBy('improve', true)}>{values.improve}</textarea>
+            <p class="field-error" id="improve-error">{err('improve')}</p>
+          </div>
+
+          <fieldset class="optional-group">
+            <legend>A little more context <span class="optional">(optional)</span></legend>
+            <div class="row-2">
+              <div class="field">
+                <label for="topic">Area of interest <span class="optional">(optional)</span></label>
+                <select id="topic" name="topic" aria-invalid={err('topic') ? 'true' : undefined} aria-describedby={describedBy('topic')}>
+                  <option value="">Select one</option>
+                  {TOPICS.map((t) => <option value={t.value} selected={values.topic === t.value}>{t.label}</option>)}
+                </select>
+                <p class="field-error" id="topic-error">{err('topic')}</p>
+              </div>
+              <div class="field">
+                <label for="buildingType">Building type <span class="optional">(optional)</span></label>
+                <select id="buildingType" name="buildingType" aria-invalid={err('buildingType') ? 'true' : undefined} aria-describedby={describedBy('buildingType')}>
+                  <option value="">Select one</option>
+                  {BUILDING_TYPES.map((b) => <option value={b} selected={values.buildingType === b}>{b}</option>)}
+                </select>
+                <p class="field-error" id="buildingType-error">{err('buildingType')}</p>
+              </div>
+            </div>
+            <div class="row-2">
+              <div class="field">
+                <label for="phone">Phone <span class="optional">(optional)</span></label>
+                <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="40" value={values.phone} aria-invalid={err('phone') ? 'true' : undefined} aria-describedby={describedBy('phone')} />
+                <p class="field-error" id="phone-error">{err('phone')}</p>
+              </div>
+              <div class="field">
+                <label for="location">Location <span class="optional">(optional)</span></label>
+                <input id="location" name="location" type="text" autocomplete="address-level2" maxlength="120" placeholder="City or region" value={values.location} aria-invalid={err('location') ? 'true' : undefined} aria-describedby={describedBy('location')} />
+                <p class="field-error" id="location-error">{err('location')}</p>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="hp" aria-hidden="true">
+            <label for="website">Leave this field empty</label>
+            <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+          <input type="hidden" name="startedAt" value={String(startedAt)} />
+
+          <div class="submit-row">
+            <button class="btn btn-primary" type="submit" data-submit>
+              <span data-submit-label>Send inquiry</span>
+            </button>
+            <p class="small muted">No obligation. We use your details only to respond to this inquiry.</p>
+          </div>
+        </form>
+      </div>
+
+      <aside class="contact-side" aria-label="Other ways to reach us">
+        <div class="panel" id={direct.id}>
+          <h2 class="side-h">{direct.heading}</h2>
+          <p class="phone-line"><Icon name="phone" /> <a href={company.phoneHref}>{company.phone}</a></p>
+          <address>{company.address.street}<br />{company.address.city}, {company.address.region} {company.address.postalCode}</address>
+        </div>
+        <div class="panel panel-sand" id={next.id}>
+          <h2 class="side-h">{next.heading}</h2>
+          <ol class="numbered">{next.list?.map((l) => <li>{l}</li>)}</ol>
+        </div>
+        <div class="note" id={privacy.id}>
+          <h2 class="side-h">{privacy.heading}</h2>
+          {privacy.body?.map((b) => <p>{b}</p>)}
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-grid { display: grid; gap: var(--space-l); grid-template-columns: minmax(0, 1fr); padding-bottom: var(--space-xl); }
+  @media (min-width: 64rem) { .contact-grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: var(--space-xl); } }
+  .form-status:empty { display: none; }
+  .form-status { margin-bottom: 1.5rem; }
+  .form-status:focus { outline: none; }
+  .form-status ul { margin: 0.25rem 0 0; padding-left: 1.2rem; }
+  .form-status a { color: inherit; }
+  .contact-form { display: grid; gap: 1.35rem; }
+  .req-note { margin: 0; font-size: 0.925rem; color: var(--ink-2); }
+  .row-2 { display: grid; gap: 1.35rem; }
+  @media (min-width: 40rem) { .row-2 { grid-template-columns: 1fr 1fr; } }
+  .optional-group { border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.25rem; margin: 0; display: grid; gap: 1.35rem; background: var(--surface); }
+  .optional-group legend { font-weight: 640; padding-inline: 0.4rem; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .submit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+  .submit-row p { margin: 0; }
+  .contact-side { display: grid; gap: 1.25rem; align-content: start; }
+  .side-h { font-size: 1.15rem; }
+  .phone-line { display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; font-weight: 620; }
+  .phone-line :global(svg) { color: var(--accent); }
+  address { font-style: normal; color: var(--ink-2); }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  const statusEl = document.querySelector<HTMLElement>('[data-form-status]');
+
+  if (form && statusEl) {
+    const submitBtn = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const submitLabel = form.querySelector<HTMLElement>('[data-submit-label]')!;
+    const phone = document.querySelector<HTMLAnchorElement>('.phone-line a');
+    const phoneHtml = phone ? `<a href="${phone.getAttribute('href')}">${phone.textContent}</a>` : 'our office';
+    const EMAIL_RE = /^[^\s@<>()[\]\\,;:"]+@[^\s@<>()[\]\\,;:"]+\.[a-z]{2,}$/i;
+
+    const messages: Record<string, (el: HTMLInputElement | HTMLTextAreaElement) => string> = {
+      name: (el) => (el.value.trim() ? '' : 'Enter your name.'),
+      email: (el) => (!el.value.trim() ? 'Enter your email address.' : EMAIL_RE.test(el.value.trim()) ? '' : 'Enter an email address in the format name@example.com.'),
+      organization: (el) => (el.value.trim() ? '' : 'Enter your organization’s name.'),
+      improve: (el) => {
+        const v = el.value.trim();
+        if (!v) return 'Tell us briefly what you would like to improve.';
+        if (v.length < 10) return 'Add a little more detail (at least 10 characters).';
+        return '';
+      },
+      phone: (el) => (!el.value.trim() || /^[0-9+().\s-]{7,}$/.test(el.value.trim()) ? '' : 'Enter a phone number using digits, spaces, dashes or parentheses.'),
+    };
+
+    const setError = (name: string, message: string) => {
+      const el = form.elements.namedItem(name) as HTMLInputElement | null;
+      const out = document.getElementById(`${name}-error`);
+      if (!el || !out) return;
+      out.textContent = message;
+      if (message) el.setAttribute('aria-invalid', 'true');
+      else el.removeAttribute('aria-invalid');
+    };
+
+    const checkField = (name: string) => {
+      const el = form.elements.namedItem(name) as HTMLInputElement | null;
+      if (!el || !messages[name]) return '';
+      const msg = messages[name](el);
+      setError(name, msg);
+      return msg;
+    };
+
+    // Validate on blur, and re-validate as the visitor fixes a field that already shows an error.
+    Object.keys(messages).forEach((name) => {
+      const el = form.elements.namedItem(name) as HTMLInputElement | null;
+      el?.addEventListener('blur', () => el.value && checkField(name));
+      el?.addEventListener('input', () => el.getAttribute('aria-invalid') && checkField(name));
+    });
+
+    const showStatus = (kind: 'success' | 'error' | 'info', title: string, body: string, list?: [string, string][]) => {
+      const items = list?.length ? `<ul>${list.map(([f, m]) => `<li><a href="#${f}">${m}</a></li>`).join('')}</ul>` : '';
+      statusEl.innerHTML = `<div class="status status-${kind}"><h2>${title}</h2>${body ? `<p>${body}</p>` : ''}${items}</div>`;
+      statusEl.focus();
+    };
+
+    const escapeHtml = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errs = Object.keys(messages).map((n) => [n, checkField(n)] as [string, string]).filter(([, m]) => m);
+      if (errs.length) {
+        showStatus('error', `Please check ${errs.length === 1 ? 'one field' : `${errs.length} fields`}`, '', errs.map(([f, m]) => [f, escapeHtml(m)]));
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.setAttribute('aria-disabled', 'true');
+      submitLabel.textContent = 'Sending…';
+      statusEl.innerHTML = '<p class="visually-hidden">Sending your inquiry…</p>';
+
+      try {
+        const data = Object.fromEntries(new FormData(form).entries());
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const body = await res.json().catch(() => ({ status: 'failed' }));
+        switch (body.status) {
+          case 'sent':
+            form.reset();
+            showStatus('success', 'Thank you. Your inquiry has been sent.', 'We’ll be in touch using the contact details you provided.');
+            break;
+          case 'invalid': {
+            const list = Object.entries(body.errors ?? {}) as [string, string][];
+            list.forEach(([f, m]) => setError(f, m));
+            showStatus('error', `Please check ${list.length === 1 ? 'one field' : `${list.length} fields`}`, '', list.map(([f, m]) => [f, escapeHtml(m)]));
+            break;
+          }
+          case 'unconfigured':
+            showStatus('info', 'Your message was not sent', `Online inquiries aren’t connected yet. Please call us at ${phoneHtml}. Your entries are still in the form.`);
+            break;
+          case 'rate_limited':
+            showStatus('error', 'Too many attempts', `Please wait a few minutes before trying again, or call ${phoneHtml}.`);
+            break;
+          default:
+            showStatus('error', 'Your message was not sent', `Something went wrong. Please try again in a moment, or call ${phoneHtml}. Your entries are still in the form.`);
+        }
+      } catch {
+        showStatus('error', 'Your message was not sent', `We couldn’t reach the server. Check your connection and try again, or call ${phoneHtml}. Your entries are still in the form.`);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.removeAttribute('aria-disabled');
+        submitLabel.textContent = 'Send inquiry';
+      }
+    });
+  }
+</script>

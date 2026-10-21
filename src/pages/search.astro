@@ -1,0 +1,284 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AskForm from '../components/AskForm.astro';
+import Icon from '../components/Icon.astro';
+import { search } from '../lib/search.ts';
+import { askSuggestions } from '../data/home.ts';
+import { solutionLinks, industryLinks } from '../data/nav.ts';
+import { company } from '../data/company.ts';
+
+export const prerender = false;
+
+const q = (Astro.url.searchParams.get('q') ?? '').slice(0, 200);
+const result = q.trim() ? search(q) : null;
+const results = result?.results ?? [];
+const hasQuery = Boolean(result?.query);
+const count = results.length;
+Astro.response.headers.set('Cache-Control', hasQuery ? 'private, max-age=60' : 'public, max-age=300');
+
+const title = hasQuery ? `Search: ${result!.query} | Astro Energy Group` : 'Ask Astro: Search Astro Energy Group';
+const summary = hasQuery
+  ? count
+    ? `${count} ${count === 1 ? 'page matches' : 'pages match'} “${result!.query}”.`
+    : `No pages match “${result!.query}”.`
+  : '';
+---
+<BaseLayout
+  title={title}
+  description="Ask a question or search Astro Energy Group’s website for information on energy audits, modeling, design/build, monitoring and funding support."
+  noindex={hasQuery}
+>
+  <section class="search-hero">
+    <div class="wrap wrap-search">
+      <p class="eyebrow">Ask Astro</p>
+      <h1>{hasQuery ? 'Search results' : 'Ask a question about your building'}</h1>
+      <AskForm id="search-q" variant="page" value={q} autofocus={!hasQuery} />
+    </div>
+  </section>
+
+  <div class="wrap wrap-search search-body">
+    <div class="search-main">
+      <p class="visually-hidden" role="status" aria-live="polite" data-results-status>{summary}</p>
+
+      {hasQuery && (
+        <section
+          class="answer"
+          aria-labelledby="answer-title"
+          data-answer
+          data-query={result!.query}
+          data-has-results={count > 0 ? 'true' : 'false'}
+        >
+          <div class="answer-head">
+            <h2 id="answer-title" class="answer-title"><Icon name="sparkle" size={16} /> AI answer</h2>
+            <p class="answer-meta">Generated from this website’s content</p>
+          </div>
+          <div class="answer-body" data-answer-body aria-live="polite" aria-busy="true">
+            <p class="answer-loading"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span> Reading the relevant pages…</p>
+          </div>
+          <p class="answer-note">General information only, not engineering or financial advice. For your specific building, <a href={`/contact/`}>talk with Astro</a>.</p>
+        </section>
+      )}
+
+      {hasQuery && result!.correctedQuery && result!.correctedQuery.toLowerCase() !== result!.query.toLowerCase() && (
+        <p class="correction">Including results for <strong>{result!.correctedQuery}</strong></p>
+      )}
+
+      {hasQuery && count > 0 && (
+        <section aria-labelledby="results-title" class="results">
+          <h2 id="results-title" class="results-title">{count} {count === 1 ? 'page' : 'pages'} on this site</h2>
+          <ol class="result-list">
+            {results.map((r) => (
+              <li class="result">
+                <p class="result-cat">{r.category}</p>
+                <h3><a href={r.url}>{r.title}</a></h3>
+                {r.heading !== r.title && <p class="result-section">{r.heading}</p>}
+                <p class="result-snippet">{r.snippet.map((p) => (p.mark ? <mark>{p.text}</mark> : p.text))}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+
+      {hasQuery && count === 0 && (
+        <section class="empty" aria-labelledby="empty-title">
+          <h2 id="empty-title">No pages match “{result!.query}”</h2>
+          <p>Try fewer or different words, such as “audit”, “funding” or “schools”, or pick a topic below. You can also ask the team directly.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="/contact/">Ask a person <Icon name="arrow" /></a>
+            <a class="btn btn-secondary" href={company.phoneHref}><Icon name="phone" /> {company.phone}</a>
+          </div>
+        </section>
+      )}
+
+      {(!hasQuery || count === 0) && (
+        <section class="browse" aria-labelledby="browse-title">
+          <h2 id="browse-title" class="browse-title">{hasQuery ? 'Popular questions' : 'Try one of these'}</h2>
+          <ul class="suggest-list">
+            {askSuggestions.map((s) => <li><a href={`/search/?q=${encodeURIComponent(s)}`}>{s}</a></li>)}
+          </ul>
+          <div class="browse-cols">
+            <nav aria-label="Browse solutions">
+              <h3>Solutions</h3>
+              <ul>{solutionLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+            </nav>
+            <nav aria-label="Browse industries">
+              <h3>Industries</h3>
+              <ul>{industryLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+            </nav>
+          </div>
+        </section>
+      )}
+    </div>
+
+    <aside class="search-side" aria-label="Talk to a person">
+      <div class="panel">
+        <h2 class="side-title">Prefer to talk it through?</h2>
+        <p>Search can point you to the right page. For advice on your own building, talk with the team.</p>
+        <a class="btn btn-primary" href="/contact/">Discuss your building</a>
+        <p class="small muted side-phone">Or call <a href={company.phoneHref}>{company.phone}</a></p>
+      </div>
+      <p class="small muted privacy">Searches are not linked to an account. Please don’t enter utility account numbers or other sensitive details.</p>
+    </aside>
+  </div>
+</BaseLayout>
+
+<style>
+  .wrap-search { max-width: 68rem; }
+  .search-hero { padding-block: clamp(2rem, 1.5rem + 2vw, 3.5rem); border-bottom: 1px solid var(--line); }
+  .search-hero h1 { font-size: var(--step-3); max-width: 24ch; }
+  .search-body { display: grid; gap: var(--space-l); grid-template-columns: minmax(0, 1fr); padding-block: var(--space-l) var(--space-xl); }
+  @media (min-width: 60rem) { .search-body { grid-template-columns: minmax(0, 1fr) 18rem; } .search-side { position: sticky; top: calc(var(--header-h) + 1.5rem); align-self: start; } }
+
+  /* Reserved from first paint when JavaScript is available, so results don't shift when it fills in. */
+  :global(html:not(.js)) .answer, .answer[hidden] { display: none; }
+  .answer { margin-bottom: var(--space-l); padding: 1.5rem; border-radius: var(--radius-lg); background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--accent); box-shadow: var(--shadow); }
+  .answer-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.25rem 1rem; margin-bottom: 0.75rem; }
+  .answer-title { display: inline-flex; align-items: center; gap: 0.4rem; margin: 0; font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent-strong); }
+  .answer-meta { margin: 0; font-size: 0.85rem; color: var(--ink-2); }
+  .answer-body :global(.answer-text) { font-size: 1.125rem; line-height: 1.6; margin-bottom: 1rem; }
+  .answer-body :global(.answer-sources) { margin: 0 0 1rem; }
+  .answer-body :global(.answer-sources h3), .answer-body :global(.answer-follow h3) { font-size: 0.85rem; font-weight: 640; margin: 0 0 0.5rem; letter-spacing: 0; color: var(--ink-2); }
+  .answer-body :global(.answer-sources ol) { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .answer-body :global(.answer-sources a) { display: inline-flex; gap: 0.4rem; align-items: center; min-height: 2.5rem; padding: 0.35rem 0.75rem; background: var(--accent-tint); border-radius: var(--radius); color: var(--accent-strong); text-decoration: none; font-size: 0.925rem; font-weight: 560; }
+  .answer-body :global(.answer-sources a:hover) { text-decoration: underline; }
+  .answer-body :global(.src-num) { font-family: var(--font-mono); font-size: 0.75rem; }
+  .answer-body :global(.answer-follow ul) { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .answer-body :global(.answer-follow a) { display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0.35rem 0.8rem; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--ink); text-decoration: none; font-size: 0.9rem; }
+  .answer-body :global(.answer-follow a:hover) { border-color: var(--accent); color: var(--accent-strong); }
+  .answer-body :global(.answer-msg) { margin: 0 0 0.75rem; color: var(--ink-2); }
+  .answer-loading { display: flex; align-items: center; gap: 0.75rem; color: var(--ink-2); margin: 0; }
+  .dots { display: inline-flex; gap: 0.25rem; }
+  .dots i { width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--accent); opacity: 0.3; animation: pulse 1.2s infinite ease-in-out; }
+  .dots i:nth-child(2) { animation-delay: 0.15s; }
+  .dots i:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes pulse { 50% { opacity: 1; } }
+  .answer-note { margin: 0.75rem 0 0; padding-top: 0.75rem; border-top: 1px solid var(--line); font-size: 0.85rem; color: var(--ink-2); max-width: none; }
+
+  .correction { color: var(--ink-2); }
+  .results-title { font-size: 1rem; font-weight: 600; color: var(--ink-2); letter-spacing: 0; margin-bottom: 0.5rem; }
+  .result-list { list-style: none; margin: 0; padding: 0; }
+  .result { padding-block: 1.25rem; border-bottom: 1px solid var(--line); }
+  .result-cat { margin: 0 0 0.2rem; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-2); }
+  .result h3 { margin: 0 0 0.15rem; font-size: 1.2rem; }
+  .result h3 a { text-decoration: none; }
+  .result h3 a:hover { text-decoration: underline; }
+  .result-section { margin: 0 0 0.35rem; font-weight: 580; font-size: 0.95rem; }
+  .result-snippet { margin: 0; color: var(--ink-2); }
+  mark { background: #fbe9b7; color: inherit; padding: 0 0.1em; border-radius: 2px; }
+
+  .empty { padding: 1.5rem; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); margin-bottom: var(--space-l); }
+  .empty h2 { font-size: var(--step-2); }
+  .browse-title { font-size: var(--step-1); }
+  .suggest-list { list-style: none; margin: 0 0 var(--space-l); padding: 0; display: grid; gap: 0.5rem; }
+  .suggest-list a { display: flex; align-items: center; min-height: 2.75rem; padding: 0.5rem 1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--ink); text-decoration: none; }
+  .suggest-list a:hover { border-color: var(--accent); color: var(--accent-strong); }
+  .browse-cols { display: grid; gap: var(--space-m); grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+  .browse-cols h3 { font-size: 1rem; }
+  .browse-cols ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; }
+  .browse-cols a { display: inline-flex; min-height: 2.25rem; align-items: center; }
+  .side-title { font-size: 1.1rem; }
+  .search-side .btn { width: 100%; }
+  .side-phone { margin: 0.75rem 0 0; }
+  .privacy { margin-top: 1rem; }
+</style>
+
+<script>
+  interface Source { id: string; title: string; heading: string; url: string }
+  type AskResponse =
+    | { status: 'ok'; answerable: boolean; answer: string; sources: Source[]; followups: string[] }
+    | { status: 'no_context' | 'unconfigured' | 'rate_limited' }
+    | { status: 'unavailable'; retryable: boolean }
+    | { status: 'invalid'; message: string };
+
+  const panel = document.querySelector<HTMLElement>('[data-answer]');
+  if (panel) {
+    const body = panel.querySelector<HTMLElement>('[data-answer-body]')!;
+    const query = panel.dataset.query ?? '';
+    const hasResults = panel.dataset.hasResults === 'true';
+    const loadingHtml = body.innerHTML;
+
+    const el = <K extends keyof HTMLElementTagNameMap>(tag: K, props: Partial<HTMLElementTagNameMap[K]> = {}, children: (Node | string)[] = []) => {
+      const node = Object.assign(document.createElement(tag), props);
+      node.append(...children);
+      return node;
+    };
+    // Only same-site relative links are rendered; anything else is dropped.
+    const safeHref = (url: string) => (/^\/(?!\/)[\w\-/#.?=&%]*$/.test(url) ? url : null);
+
+    const message = (text: string, actions: Node[] = []) => {
+      body.replaceChildren(el('p', { className: 'answer-msg', textContent: text }), ...actions);
+      body.setAttribute('aria-busy', 'false');
+    };
+
+    const retryButton = () => {
+      const b = el('button', { type: 'button', className: 'btn btn-secondary', textContent: 'Try again' });
+      b.addEventListener('click', () => run());
+      return b;
+    };
+
+    const render = (data: Extract<AskResponse, { status: 'ok' }>) => {
+      const nodes: Node[] = [el('p', { className: 'answer-text', textContent: data.answer })];
+      const sources = data.sources.filter((s) => safeHref(s.url));
+      if (sources.length) {
+        const list = el('ol', {}, sources.map((s, i) =>
+          el('li', {}, [el('a', { href: safeHref(s.url)! }, [el('span', { className: 'src-num', textContent: `${i + 1}` }), `${s.title}${s.heading && s.heading !== s.title ? ` · ${s.heading}` : ''}`])]),
+        ));
+        nodes.push(el('div', { className: 'answer-sources' }, [el('h3', { textContent: data.answerable ? 'Sources on this site' : 'Closest pages' }), list]));
+      }
+      const follow = data.followups.filter(Boolean).slice(0, 3);
+      if (follow.length) {
+        const list = el('ul', {}, follow.map((f) => el('li', {}, [el('a', { href: `/search/?q=${encodeURIComponent(f)}`, textContent: f })])));
+        nodes.push(el('div', { className: 'answer-follow' }, [el('h3', { textContent: 'Related questions' }), list]));
+      }
+      body.replaceChildren(...nodes);
+      body.setAttribute('aria-busy', 'false');
+    };
+
+    const run = async () => {
+      panel.hidden = false;
+      body.innerHTML = loadingHtml;
+      body.setAttribute('aria-busy', 'true');
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 30_000);
+      try {
+        const res = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ q: query }),
+          signal: controller.signal,
+        });
+        const data = (await res.json().catch(() => ({ status: 'unavailable', retryable: true }))) as AskResponse;
+        switch (data.status) {
+          case 'ok':
+            render(data);
+            break;
+          case 'no_context':
+            // Nothing relevant to ground an answer in. Say so only when keyword search also found nothing useful.
+            if (hasResults) panel.hidden = true;
+            else message('This website doesn’t cover that topic. Try different words, or ask the team directly.');
+            break;
+          case 'unconfigured':
+            message(hasResults ? 'AI answers aren’t available right now. The results below come from a standard search of this site.' : 'AI answers aren’t available right now.');
+            break;
+          case 'rate_limited':
+            message('You’ve asked several questions in a short time. Please wait a minute and try again. The results below are still available.', [retryButton()]);
+            break;
+          case 'invalid':
+            message(data.message);
+            break;
+          default:
+            message(
+              hasResults ? 'We couldn’t generate an answer this time. The search results below are still available.' : 'We couldn’t generate an answer this time.',
+              data.status === 'unavailable' && data.retryable ? [retryButton()] : [],
+            );
+        }
+      } catch {
+        message('We couldn’t reach Ask Astro. Check your connection and try again. Search results are shown below.', [retryButton()]);
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+
+    run();
+  }
+</script>

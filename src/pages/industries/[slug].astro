@@ -1,0 +1,99 @@
+---
+import { Picture } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import ProcessSteps from '../../components/ProcessSteps.astro';
+import Icon from '../../components/Icon.astro';
+import { industryPages, industrySummaries } from '../../data/industries.ts';
+import { solutionPages } from '../../data/solutions.ts';
+import campus from '../../assets/photos/campus.jpg';
+import plant from '../../assets/photos/hero-plant.jpg';
+
+export function getStaticPaths() {
+  return industryPages.map((page) => ({ params: { slug: page.url.split('/')[2] }, props: { page } }));
+}
+const { page } = Astro.props;
+const slug = page.url.split('/')[2];
+const summary = industrySummaries.find((s) => s.id === slug)!;
+const image = slug === 'education'
+  ? { src: campus, alt: 'Red-brick university academic building facing a landscaped plaza' }
+  : { src: plant, alt: 'Mechanical room with insulated piping, valves and circulation pumps' };
+const crumbs = [{ label: 'Industries', href: '/industries/' }, { label: page.label, href: page.url }];
+const services = summary.services.map((id) => solutionPages.find((p) => p.id === id)!);
+const [concerns, helps, questions] = page.sections;
+const contactQuery = `building=${encodeURIComponent(summary.buildingType)}`;
+---
+<BaseLayout title={page.metaTitle} description={page.description} crumbs={crumbs}>
+  <PageHero eyebrow="Industries" title={page.title} lede={page.lede} crumbs={crumbs}>
+    <div class="btn-row">
+      <a class="btn btn-primary" href={`/contact/?${contactQuery}`}>Discuss your facility <Icon name="arrow" /></a>
+    </div>
+    <Fragment slot="aside">
+      <div class="photo ind-photo">
+        <Picture src={image.src} alt={image.alt} widths={[480, 760, 1100]} sizes="(min-width: 60rem) 40vw, 100vw" formats={['avif', 'webp']} loading="eager" fetchpriority="high" />
+      </div>
+    </Fragment>
+  </PageHero>
+
+  <section class="section" aria-labelledby="h-concerns" id={concerns.id}>
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow">The context</p>
+        <h2 id="h-concerns">{concerns.heading}</h2>
+      </div>
+      <ul class="concern-grid">
+        {concerns.list?.map((c) => {
+          const [title, ...rest] = c.split(': ');
+          return <li><strong>{title}</strong><span>{rest.join(': ')}</span></li>;
+        })}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section-surface" aria-labelledby="h-helps" id={helps.id}>
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow">Where Astro fits</p>
+        <h2 id="h-helps">{helps.heading}</h2>
+        <ul class="svc-links">
+          {services.map((s) => <li><a class="link-arrow" href={s.url}>{s.title} <Icon name="arrow" size={16} /></a></li>)}
+        </ul>
+      </div>
+      <ul class="check-list">{helps.list?.map((l) => <li>{l}</li>)}</ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="h-questions" id={questions.id}>
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow">Before you start</p>
+        <h2 id="h-questions">{questions.heading}</h2>
+        <p class="muted">Bring these to a first conversation. You don’t need every answer.</p>
+      </div>
+      <ol class="numbered">{questions.list?.map((q) => <li>{q}</li>)}</ol>
+    </div>
+  </section>
+
+  <section class="section section-sand" aria-labelledby="h-process">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">How an engagement works</p>
+        <h2 id="h-process">From assessment to verified results</h2>
+      </div>
+      <ProcessSteps />
+    </div>
+  </section>
+
+  <CtaBand query={contactQuery} title={`Discuss your ${summary.name.toLowerCase()} facilities`} />
+</BaseLayout>
+
+<style>
+  .ind-photo { aspect-ratio: 4 / 3; }
+  .concern-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+  @media (min-width: 40rem) { .concern-grid { grid-template-columns: 1fr 1fr; } }
+  .concern-grid li { background: var(--surface); padding: 1.25rem; display: grid; gap: 0.35rem; align-content: start; }
+  .concern-grid strong { font-size: 1.05rem; }
+  .concern-grid span { color: var(--ink-2); font-size: 0.975rem; }
+  .svc-links { list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; gap: 0.5rem; }
+</style>

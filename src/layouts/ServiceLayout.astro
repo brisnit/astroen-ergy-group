@@ -1,0 +1,201 @@
+---
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import BaseLayout from './BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Terms from '../components/Terms.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import type { Page, Section } from '../data/types.ts';
+import { solutionPages } from '../data/solutions.ts';
+
+interface Props {
+  page: Page;
+  image?: { src: ImageMetadata; alt: string };
+}
+const { page, image } = Astro.props;
+
+const byId = (id: string) => page.sections.find((s) => s.id === id);
+const problem = byId('problem');
+const audience = byId('audience');
+const work = byId('work');
+const deliverables = byId('deliverables');
+const next = byId('next');
+const extras = page.sections.filter((s) => !['problem', 'audience', 'work', 'deliverables', 'next'].includes(s.id));
+
+// The natural next service in the assessment -> verification sequence.
+const sequence = ['energy-audits', 'energy-modeling', 'design-build', 'monitoring-verification', 'funding-incentives'];
+const nextId = sequence[sequence.indexOf(page.id) + 1];
+const nextPage = solutionPages.find((p) => p.id === nextId);
+const related = solutionPages.filter((p) => p.id !== page.id);
+
+const crumbs = [
+  { label: 'Solutions', href: '/solutions/' },
+  { label: page.label, href: page.url },
+];
+
+const toc = [problem, audience, work, ...extras, deliverables, next].filter(Boolean) as Section[];
+const extraSlots: Record<string, string> = {};
+for (const s of [...extras, work].filter(Boolean) as Section[]) {
+  const name = `after-${s.id}`;
+  if (Astro.slots.has(name)) extraSlots[s.id] = await Astro.slots.render(name);
+}
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: page.title,
+  description: page.description,
+  provider: { '@id': `${(Astro.site ?? new URL('https://www.astroenergygroup.com')).origin}/#organization` },
+  url: new URL(page.url, Astro.site).href,
+};
+---
+<BaseLayout title={page.metaTitle} description={page.description} crumbs={crumbs} schema={[serviceSchema]}>
+  <PageHero eyebrow="Solutions" title={page.title} lede={page.lede} crumbs={crumbs}>
+    <div class="btn-row">
+      <a class="btn btn-primary" href={`/contact/?topic=${page.id}`}>Discuss your building <Icon name="arrow" /></a>
+      {next && <a class="btn btn-secondary" href="#next">What comes next</a>}
+    </div>
+    {image && (
+      <Fragment slot="aside">
+        <div class="photo hero-photo">
+          <Picture src={image.src} alt={image.alt} widths={[480, 760, 1100]} sizes="(min-width: 60rem) 40vw, 100vw" formats={['avif', 'webp']} loading="eager" fetchpriority="high" />
+        </div>
+      </Fragment>
+    )}
+  </PageHero>
+
+  <div class="wrap service-body">
+    <div class="service-main">
+      <nav class="toc" aria-label="On this page">
+        <p class="toc-title">On this page</p>
+        <ul>{toc.map((s) => <li><a href={`#${s.id}`}>{s.heading}</a></li>)}</ul>
+      </nav>
+
+      {problem && (
+        <section id="problem" class="svc-section svc-problem" aria-labelledby="h-problem">
+          <h2 id="h-problem">{problem.heading}</h2>
+          {problem.body?.map((p, i) => <p class={i === 0 ? 'lead-para' : undefined}>{p}</p>)}
+        </section>
+      )}
+
+      {audience && (
+        <section id="audience" class="svc-section" aria-labelledby="h-audience">
+          <h2 id="h-audience">{audience.heading}</h2>
+          <ul class="check-list">{audience.list?.map((l) => <li>{l}</li>)}</ul>
+        </section>
+      )}
+
+      {work && (
+        <section id="work" class="svc-section" aria-labelledby="h-work">
+          <h2 id="h-work">{work.heading}</h2>
+          {work.body?.map((p) => <p>{p}</p>)}
+          {work.list && <ol class="numbered">{work.list.map((l) => <li>{l}</li>)}</ol>}
+          {extraSlots.work && <Fragment set:html={extraSlots.work} />}
+        </section>
+      )}
+
+      {extras.map((s) => (
+        <section id={s.id} class="svc-section" aria-labelledby={`h-${s.id}`}>
+          <h2 id={`h-${s.id}`}>{s.heading}</h2>
+          {s.body?.map((p) => <p>{p}</p>)}
+          {s.list && <ul class="check-list">{s.list.map((l) => <li>{l}</li>)}</ul>}
+          {extraSlots[s.id] && <Fragment set:html={extraSlots[s.id]} />}
+        </section>
+      ))}
+
+      {deliverables && (
+        <section id="deliverables" class="svc-section svc-deliverables" aria-labelledby="h-deliverables">
+          <h2 id="h-deliverables">{deliverables.heading}</h2>
+          <ul class="check-list">{deliverables.list?.map((l) => <li>{l}</li>)}</ul>
+        </section>
+      )}
+
+      {next && (
+        <section id="next" class="svc-section" aria-labelledby="h-next">
+          <h2 id="h-next">{next.heading}</h2>
+          {next.body?.map((p) => <p>{p}</p>)}
+          {next.list && <ul class="check-list">{next.list.map((l) => <li>{l}</li>)}</ul>}
+          {nextPage && (
+            <a class="next-card" href={nextPage.url}>
+              <span class="eyebrow">Next stage</span>
+              <span class="next-title">{nextPage.title}</span>
+              <span class="next-text">{nextPage.lede}</span>
+              <Icon name="arrow" size={22} class="next-arrow" />
+            </a>
+          )}
+        </section>
+      )}
+    </div>
+
+    <aside class="service-side" aria-label="Related information">
+      {page.terms && <Terms terms={page.terms} />}
+      <div class="panel side-cta">
+        <h2 class="side-title">Not sure this is the right starting point?</h2>
+        <p>Describe your building and goals, and we’ll suggest where to begin.</p>
+        <a class="btn btn-primary" href={`/contact/?topic=${page.id}`}>Discuss your building</a>
+        <p class="small muted side-ask">Or <a href="/search/">ask Astro a question</a>.</p>
+      </div>
+    </aside>
+  </div>
+
+  <section class="section-tight related" aria-labelledby="related-title">
+    <div class="wrap">
+      <h2 id="related-title" class="related-title">Other solutions</h2>
+      <ul class="related-list">
+        {related.map((p) => (
+          <li><a href={p.url}><span>{p.label}</span><Icon name="arrow" size={16} /></a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand query={`topic=${page.id}`} />
+</BaseLayout>
+
+<style>
+  .hero-photo { aspect-ratio: 4 / 3; }
+  .service-body {
+    display: grid; gap: var(--space-l);
+    grid-template-columns: minmax(0, 1fr);
+    padding-block: var(--space-l) var(--space-xl);
+  }
+  @media (min-width: 64rem) {
+    .service-body { grid-template-columns: minmax(0, 1fr) 22rem; gap: var(--space-xl); }
+    .side-cta { position: sticky; top: calc(var(--header-h) + 1.5rem); }
+  }
+  .service-side { display: flex; flex-direction: column; gap: 1.25rem; }
+  .toc { border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1rem 1.25rem; background: var(--surface); }
+  .toc-title { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 0.5rem; }
+  .toc ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; }
+  .toc a { display: inline-flex; min-height: 2.25rem; align-items: center; font-size: 0.95rem; }
+  .svc-section { padding-top: var(--space-l); margin-top: var(--space-l); border-top: 1px solid var(--line); }
+  .svc-section:first-of-type { border-top: 0; }
+  .svc-section h2 { font-size: var(--step-2); }
+  .svc-problem { border-top: 0; margin-top: var(--space-m); padding-top: 0; }
+  .lead-para { font-size: 1.2rem; line-height: 1.55; color: var(--ink); }
+  .svc-deliverables { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: var(--space-m); }
+  .next-card {
+    position: relative; display: grid; gap: 0.25rem;
+    margin-top: 1.5rem; padding: 1.25rem 3.5rem 1.25rem 1.25rem;
+    border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: var(--radius-lg);
+    background: var(--surface); color: var(--ink); text-decoration: none;
+  }
+  .next-card:hover { border-color: var(--accent); color: var(--ink); }
+  .next-card .eyebrow { margin: 0; }
+  .next-title { font-weight: 650; font-size: 1.2rem; }
+  .next-text { color: var(--ink-2); font-size: 0.975rem; }
+  .next-card :global(.next-arrow) { position: absolute; right: 1.25rem; top: 50%; translate: 0 -50%; color: var(--accent); }
+  .side-title { font-size: 1.15rem; }
+  .side-cta .btn { width: 100%; }
+  .side-ask { margin: 0.75rem 0 0; }
+  .related { border-top: 1px solid var(--line); }
+  .related-title { font-size: var(--step-1); }
+  .related-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+  .related-list a {
+    display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;
+    min-height: 3.25rem; padding: 0.75rem 1rem;
+    border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
+    color: var(--ink); text-decoration: none; font-weight: 580;
+  }
+  .related-list a:hover { border-color: var(--accent); color: var(--accent-strong); }
+</style>

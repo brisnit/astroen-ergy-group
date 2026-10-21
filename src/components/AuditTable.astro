@@ -1,0 +1,41 @@
+---
+import { auditLevels } from '../data/solutions.ts';
+---
+<div class="table-scroll" role="region" aria-labelledby="audit-table-caption" tabindex="0">
+  <table role="table">
+    <caption id="audit-table-caption">Comparing ASHRAE Level 1, 2 and 3 energy audits</caption>
+    <thead role="rowgroup">
+      <tr role="row">
+        <th scope="col" role="columnheader">Level</th>
+        <th scope="col" role="columnheader">Best for</th>
+        <th scope="col" role="columnheader">What’s involved</th>
+        <th scope="col" role="columnheader">What you receive</th>
+      </tr>
+    </thead>
+    <tbody role="rowgroup">
+      {auditLevels.map((l) => (
+        <tr role="row">
+          <th scope="row" role="rowheader">{l.level}<span>{l.name}</span></th>
+          <td role="cell" data-label="Best for">{l.bestFor}</td>
+          <td role="cell" data-label="What’s involved">{l.involves}</td>
+          <td role="cell" data-label="What you receive">{l.receive}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+<p class="small muted table-note">Scope, cost and timing depend on the building and are agreed before work begins.</p>
+<style>
+  .table-scroll { margin-top: 1.5rem; }
+  /* Narrow screens: each level becomes a labelled card instead of a scrolling table. */
+  @media (max-width: 40rem) {
+    .table-scroll { overflow: visible; }
+    table, caption, tbody, tr, th, td { display: block; min-width: 0; width: auto; }
+    thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    tbody tr { border-top: 1px solid var(--line); padding-block: 0.5rem; }
+    tbody th, tbody td { border-top: 0; padding-block: 0.4rem; }
+    tbody th { width: auto; font-size: 1.05rem; }
+    td::before { content: attr(data-label); display: block; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 0.15rem; }
+  }
+  .table-note { margin-top: 0.75rem; }
+</style>

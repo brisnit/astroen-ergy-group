@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Icon from '../../components/Icon.astro';
+import { industriesOverview as page, industrySummaries } from '../../data/industries.ts';
+import { solutionPages } from '../../data/solutions.ts';
+
+const crumbs = [{ label: 'Industries', href: '/industries/' }];
+const solutionById = (id: string) => solutionPages.find((p) => p.id === id)!;
+const sectionById = (id: string) => page.sections.find((s) => s.id === id);
+---
+<BaseLayout title={page.metaTitle} description={page.description} crumbs={crumbs}>
+  <PageHero eyebrow="Industries" title="Built for facilities that can’t afford guesswork" lede={page.lede} crumbs={crumbs} />
+
+  <section class="section-tight">
+    <div class="wrap">
+      <nav aria-label="Jump to an industry" class="jump">
+        <ul>{industrySummaries.map((i) => <li><a href={i.href ?? `#${i.anchor}`}>{i.name}</a></li>)}</ul>
+      </nav>
+
+      <div class="ind-list">
+        {industrySummaries.map((i) => {
+          const section = sectionById(i.id);
+          return (
+            <section class="ind" id={i.anchor} aria-labelledby={`ind-${i.id}`}>
+              <div class="ind-head">
+                <h2 id={`ind-${i.id}`}>{i.name}</h2>
+                {section?.body?.map((b) => <p>{b}</p>)}
+                {!section && <p class="muted">See how Astro’s services apply to {i.name.toLowerCase()}.</p>}
+              </div>
+              <div class="ind-detail">
+                <h3 class="ind-label">Common concerns</h3>
+                <ul class="check-list">{i.concerns.map((c) => <li>{c}</li>)}</ul>
+                <h3 class="ind-label">Relevant services</h3>
+                <ul class="ind-services">
+                  {i.services.map((id) => <li><a href={solutionById(id).url}>{solutionById(id).label}</a></li>)}
+                </ul>
+                <div class="btn-row">
+                  {i.href && <a class="btn btn-secondary" href={i.href}>{i.name} in detail <Icon name="arrow" /></a>}
+                  <a class="link-arrow" href={`/contact/?building=${encodeURIComponent(i.buildingType)}`}>Discuss a {i.buildingType.toLowerCase()} building <Icon name="arrow" size={16} /></a>
+                </div>
+              </div>
+            </section>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title="Your building type not listed?" text="The same assessment, modeling, design/build and verification services apply to many facility types. Tell us about yours." />
+</BaseLayout>
+
+<style>
+  .jump ul { list-style: none; margin: 0 0 var(--space-l); padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .jump a { display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0.4rem 0.9rem; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--ink); text-decoration: none; font-size: 0.95rem; background: var(--surface); }
+  .jump a:hover { border-color: var(--accent); color: var(--accent-strong); }
+  .ind { display: grid; gap: var(--space-m); padding-block: var(--space-l); border-top: 1px solid var(--line); }
+  @media (min-width: 56rem) { .ind { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-xl); } }
+  .ind h2 { font-size: var(--step-2); }
+  .ind-head p { color: var(--ink-2); }
+  .ind-label { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 0.75rem; }
+  .ind-label:not(:first-child) { margin-top: 1.5rem; }
+  .ind-services { list-style: none; margin: 0 0 1.5rem; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .ind-services a { display: inline-flex; min-height: 2.25rem; align-items: center; padding: 0.25rem 0.75rem; background: var(--accent-tint); border-radius: var(--radius); color: var(--accent-strong); text-decoration: none; font-size: 0.925rem; font-weight: 560; }
+  .ind-services a:hover { text-decoration: underline; }
+</style>

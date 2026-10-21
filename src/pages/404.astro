@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AskForm from '../components/AskForm.astro';
+import { solutionLinks } from '../data/nav.ts';
+---
+<BaseLayout title="Page not found | Astro Energy Group" description="The page you were looking for could not be found." noindex>
+  <section class="section">
+    <div class="wrap wrap-narrow">
+      <p class="eyebrow">Error 404</p>
+      <h1>We couldn’t find that page</h1>
+      <p class="lede">It may have moved when the site was rebuilt. Search for what you need, or start from one of these pages.</p>
+      <div class="nf-search"><AskForm id="nf-q" variant="page" /></div>
+      <ul class="nf-links">
+        <li><a href="/">Home</a></li>
+        {solutionLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .nf-search { margin-block: 2rem; }
+  .nf-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; padding: 0; list-style: none; }
+  .nf-links a { display: inline-flex; min-height: 2.5rem; align-items: center; }
+</style>

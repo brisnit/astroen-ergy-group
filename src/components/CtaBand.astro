@@ -1,0 +1,34 @@
+---
+import Icon from './Icon.astro';
+import { company } from '../data/company.ts';
+interface Props {
+  title?: string;
+  text?: string;
+  /** Query string carried into the contact form, e.g. "topic=energy-audits". */
+  query?: string;
+}
+const {
+  title = 'Talk through your building with us',
+  text = 'Tell us what you want to improve. We’ll discuss your goals and constraints and suggest a sensible first step. No obligation.',
+  query,
+} = Astro.props;
+const href = query ? `/contact/?${query}` : '/contact/';
+---
+<section class="cta-band section-night" aria-labelledby="cta-title">
+  <div class="wrap cta-inner">
+    <div>
+      <h2 id="cta-title">{title}</h2>
+      <p class="lede">{text}</p>
+    </div>
+    <div class="btn-row">
+      <a class="btn btn-primary" href={href}>Discuss your building <Icon name="arrow" /></a>
+      <a class="btn btn-secondary" href={company.phoneHref}><Icon name="phone" /> {company.phone}</a>
+    </div>
+  </div>
+</section>
+<style>
+  .cta-band { padding-block: var(--space-xl); background: var(--night-2); }
+  .cta-inner { display: grid; gap: var(--space-m); align-items: center; }
+  @media (min-width: 56rem) { .cta-inner { grid-template-columns: 1.5fr 1fr; } .cta-inner .btn-row { justify-content: flex-end; } }
+  h2 { max-width: 20ch; }
+</style>

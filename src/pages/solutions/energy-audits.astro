@@ -1,0 +1,9 @@
+---
+import ServiceLayout from '../../layouts/ServiceLayout.astro';
+import AuditTable from '../../components/AuditTable.astro';
+import { energyAudits } from '../../data/solutions.ts';
+import photo from '../../assets/photos/technician.jpg';
+---
+<ServiceLayout page={energyAudits} image={{ src: photo, alt: 'Technician in a hard hat inspecting piping and valves in a pump room' }}>
+  <AuditTable slot="after-audit-levels" />
+</ServiceLayout>

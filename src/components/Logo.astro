@@ -1,0 +1,33 @@
+---
+/**
+ * Interim typographic wordmark. The legacy site only offers a low-resolution green
+ * raster wordmark and a star mark embedded in a flowchart image; no vector logo was
+ * available. This treatment uses the company name only and invents no symbol.
+ * Replace with the official logo files when supplied (see docs/content-verification.md).
+ */
+interface Props { tone?: 'dark' | 'light' }
+const { tone = 'dark' } = Astro.props;
+---
+<a href="/" class:list={['logo', `logo-${tone}`]}>
+  <span class="logo-name">Astro</span>
+  <span class="logo-sub">Energy Group</span>
+</a>
+
+<style>
+  .logo {
+    display: inline-flex; flex-direction: column; justify-content: center;
+    min-height: 2.75rem;
+    text-decoration: none; line-height: 1;
+    padding-left: 0.7rem;
+    border-left: 3px solid var(--accent);
+  }
+  .logo-name { font-weight: 720; font-size: 1.35rem; letter-spacing: -0.03em; color: var(--ink); }
+  .logo-sub {
+    margin-top: 0.22rem;
+    font-family: var(--font-mono); font-size: 0.64rem; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-2);
+  }
+  .logo-light { border-left-color: var(--night-accent); }
+  .logo-light .logo-name { color: #fff; }
+  .logo-light .logo-sub { color: var(--night-muted); }
+</style>
