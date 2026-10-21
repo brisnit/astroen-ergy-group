@@ -41,20 +41,20 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
-  .site-footer { padding-block: var(--space-xl) var(--space-l); margin-top: 0; }
+  .site-footer { padding-block: var(--section-y) clamp(2rem, 1.5rem + 2vw, 3rem); margin-top: 0; background: var(--teal-deep); }
   .footer-grid { display: grid; gap: var(--space-l); grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
   .footer-brand { grid-column: 1 / -1; max-width: 26rem; }
   @media (min-width: 64rem) {
     .footer-grid { grid-template-columns: 1.6fr 1fr 1fr 1fr; }
     .footer-brand { grid-column: auto; }
   }
-  .footer-brand p { margin-top: 1.25rem; color: var(--on-dark-muted); }
-  address { font-style: normal; color: var(--on-dark-muted); line-height: 1.7; }
-  .footer-col h2 { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--on-dark-muted); margin-bottom: 1rem; }
+  .footer-brand p { margin-top: 1.25rem; color: var(--mist); }
+  address { font-style: normal; color: var(--mist); line-height: 1.7; }
+  .footer-col h2 { font-family: var(--font-mono); font-size: var(--mono-size); font-weight: 500; letter-spacing: var(--mono-tracking); text-transform: uppercase; color: var(--lagoon); margin-bottom: 1rem; }
   .footer-col ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.15rem; }
-  .footer-col a { display: inline-flex; min-height: 2.25rem; align-items: center; color: var(--on-dark); text-decoration: none; }
-  .footer-col a:hover { color: #fff; text-decoration: underline; }
-  .footer-base { margin-top: var(--space-l); padding-top: var(--space-m); display: grid; gap: 0.25rem; position: relative; }
-  .footer-base::before { content: ''; position: absolute; top: 0; left: var(--gutter); right: var(--gutter); height: 1px; background: rgb(255 255 255 / 14%); }
-  .footer-base p { margin: 0; font-size: 0.85rem; color: var(--on-dark-muted); max-width: none; }
+  .footer-col a { display: inline-flex; min-height: 2.75rem; align-items: center; color: var(--mist); text-decoration: none; transition: color 180ms ease; }
+  .footer-col a:hover { color: var(--white); text-decoration: underline; }
+  .footer-base { margin-top: var(--space-l); padding-top: var(--space-m); display: grid; gap: 0.3rem; position: relative; }
+  .footer-base::before { content: ''; position: absolute; top: 0; left: var(--gutter); right: var(--gutter); height: 1px; background: var(--teal-line); }
+  .footer-base p { margin: 0; font-size: 0.85rem; color: var(--mist-3); max-width: none; }
 </style>

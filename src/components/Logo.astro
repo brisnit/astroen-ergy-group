@@ -1,33 +1,49 @@
 ---
 /**
- * Interim typographic wordmark. The legacy site only offers a low-resolution green
- * raster wordmark and a star mark embedded in a flowchart image; no vector logo was
- * available. This treatment uses the company name only and invents no symbol.
- * Replace with the official logo files when supplied (see docs/content-verification.md).
+ * AstroEnergy Group lockup: the Flux Star mark beside the wordmark.
+ * `tone="light"` is for dark backgrounds (header, footer): lagoon star, teal-deep stroke.
+ * `tone="dark"` is for light backgrounds: teal star, white stroke.
  */
 interface Props { tone?: 'dark' | 'light' }
-const { tone = 'dark' } = Astro.props;
+const { tone = 'light' } = Astro.props;
 ---
-<a href="/" class:list={['logo', `logo-${tone}`]}>
-  <span class="logo-name">Astro</span>
-  <span class="logo-sub">Energy Group</span>
+<a href="/" class:list={['logo', `logo-${tone}`]} aria-label="AstroEnergy Group home">
+  <svg class="logo-mark" viewBox="0 0 120 120" width="40" height="40" aria-hidden="true" focusable="false">
+    <path class="star" d="M60 6 C64 44 76 56 114 60 C76 64 64 76 60 114 C56 76 44 64 6 60 C44 56 56 44 60 6 Z" />
+    <polyline class="bolt" points="40,34 64,56 52,62 82,88" fill="none" stroke-width="7" />
+    <circle class="dot" cx="96" cy="24" r="7" />
+  </svg>
+  <span class="logo-text" aria-hidden="true">
+    <span class="logo-name">AstroEnergy</span>
+    <span class="logo-sub">Group</span>
+  </span>
 </a>
 
 <style>
   .logo {
-    display: inline-flex; flex-direction: column; justify-content: center;
-    min-height: 2.75rem;
+    display: inline-flex; align-items: center; gap: 0.7rem;
+    min-height: 2.75rem; min-width: 2.75rem;
     text-decoration: none; line-height: 1;
-    padding-left: 0.7rem;
-    border-left: 3px solid var(--accent);
   }
-  .logo-name { font-weight: 720; font-size: 1.35rem; letter-spacing: -0.03em; color: var(--ink); }
-  .logo-sub {
-    margin-top: 0.22rem;
-    font-family: var(--font-mono); font-size: 0.64rem; font-weight: 500;
-    letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-2);
+  .logo-mark { flex: none; width: 40px; height: 40px; }
+  .logo-text { display: grid; gap: 0.3rem; }
+  .logo-name { font-family: var(--font-sans); font-weight: 600; font-size: 1.25rem; letter-spacing: -0.03em; }
+  .logo-sub { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.55em; text-transform: uppercase; }
+
+  .logo-light .star { fill: var(--lagoon); }
+  .logo-light .bolt { stroke: var(--teal-deep); }
+  .logo-light .logo-name { color: var(--white); }
+  .logo-light .logo-sub { color: var(--mist-3); }
+
+  .logo-dark .star { fill: var(--teal); }
+  .logo-dark .bolt { stroke: var(--white); }
+  .logo-dark .logo-name { color: var(--teal-deep); }
+  .logo-dark .logo-sub { color: var(--ink-muted); }
+
+  .dot { fill: var(--flare-light); }
+
+  /* Narrow phones: the header shows the mark only so the CTA and menu still fit on one row. */
+  @media (max-width: 26rem) {
+    :global(.site-header) .logo-text { display: none; }
   }
-  .logo-light { border-left-color: var(--on-dark-accent); }
-  .logo-light .logo-name { color: #fff; }
-  .logo-light .logo-sub { color: var(--on-dark-muted); }
 </style>

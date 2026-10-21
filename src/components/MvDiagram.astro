@@ -8,45 +8,53 @@
   <svg viewBox="0 0 560 300" role="img" aria-labelledby="mv-title mv-desc" class="mv-svg">
     <title id="mv-title">How measurement and verification works</title>
     <desc id="mv-desc">An illustrative chart, without values. Energy use is measured before improvements to set a baseline. After improvements, measured use is compared with what the baseline predicts; the difference is the verified change. Ongoing monitoring flags any drift back toward the baseline.</desc>
-    <defs>
-      <pattern id="mv-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <line x1="0" y1="0" x2="0" y2="6" stroke="#086c68" stroke-width="1.4" opacity="0.35" />
-      </pattern>
-    </defs>
     <!-- axes -->
-    <line x1="48" y1="250" x2="540" y2="250" stroke="#9fb0b4" stroke-width="1.5" />
-    <line x1="48" y1="30" x2="48" y2="250" stroke="#9fb0b4" stroke-width="1.5" />
-    <text transform="translate(32 140) rotate(-90)" text-anchor="middle" font-size="12" fill="#4a5862">Energy use</text>
-    <text x="540" y="272" text-anchor="end" font-size="12" fill="#4a5862">Time</text>
+    <line class="mv-axis" x1="48" y1="250" x2="540" y2="250" />
+    <line class="mv-axis" x1="48" y1="30" x2="48" y2="250" />
+    <text class="mv-label-muted" transform="translate(32 140) rotate(-90)" text-anchor="middle" font-size="12">Energy use</text>
+    <text class="mv-label-muted" x="540" y="272" text-anchor="end" font-size="12">Time</text>
     <!-- phase dividers -->
-    <rect class="mv-fade" x="220" y="40" width="80" height="210" fill="#e8b44d" fill-opacity="0.16" />
-    <line x1="220" y1="40" x2="220" y2="250" stroke="#dce4e5" stroke-dasharray="4 4" />
-    <line x1="300" y1="40" x2="300" y2="250" stroke="#dce4e5" stroke-dasharray="4 4" />
-    <text x="134" y="56" text-anchor="middle" font-size="12" font-family="IBM Plex Mono, monospace" fill="#4a5862">BEFORE</text>
-    <text x="260" y="56" text-anchor="middle" font-size="12" font-family="IBM Plex Mono, monospace" fill="#4a5862">DURING</text>
-    <text x="420" y="56" text-anchor="middle" font-size="12" font-family="IBM Plex Mono, monospace" fill="#4a5862">AFTER</text>
+    <rect class="mv-fade mv-during" x="220" y="40" width="80" height="210" />
+    <line class="mv-divider" x1="220" y1="40" x2="220" y2="250" />
+    <line class="mv-divider" x1="300" y1="40" x2="300" y2="250" />
+    <text class="mv-phase" x="134" y="56" text-anchor="middle" font-size="12">BEFORE</text>
+    <text class="mv-phase" x="260" y="56" text-anchor="middle" font-size="12">DURING</text>
+    <text class="mv-phase" x="420" y="56" text-anchor="middle" font-size="12">AFTER</text>
     <!-- verified difference area -->
-    <path class="mv-fade" d="M300 104 C 340 98, 380 110, 420 102 S 500 100, 540 104 L 540 170 C 500 168, 470 176, 420 168 S 340 160, 300 166 Z" fill="url(#mv-hatch)" />
+    <path class="mv-fade mv-area" d="M300 104 C 340 98, 380 110, 420 102 S 500 100, 540 104 L 540 170 C 500 168, 470 176, 420 168 S 340 160, 300 166 Z" />
     <!-- baseline (measured then projected) -->
-    <path class="mv-draw" pathLength="1" d="M48 110 C 90 96, 130 118, 170 104 S 210 100, 220 106" fill="none" stroke="#101d2b" stroke-width="2.5" />
-    <path d="M220 106 C 250 112, 270 98, 300 104 C 340 98, 380 110, 420 102 S 500 100, 540 104" class="mv-fade" fill="none" stroke="#101d2b" stroke-width="2" stroke-dasharray="6 5" />
+    <path class="mv-draw mv-measured" pathLength="1" d="M48 110 C 90 96, 130 118, 170 104 S 210 100, 220 106" fill="none" />
+    <path d="M220 106 C 250 112, 270 98, 300 104 C 340 98, 380 110, 420 102 S 500 100, 540 104" class="mv-fade mv-baseline" fill="none" />
     <!-- measured after -->
-    <path class="mv-draw mv-draw-2" pathLength="1" d="M220 106 C 245 120, 265 150, 300 166 C 340 160, 380 172, 420 168 S 470 176, 500 166 S 525 150, 540 150" fill="none" stroke="#086c68" stroke-width="3" />
+    <path class="mv-draw mv-draw-2 mv-measured" pathLength="1" d="M220 106 C 245 120, 265 150, 300 166 C 340 160, 380 172, 420 168 S 470 176, 500 166 S 525 150, 540 150" fill="none" />
     <!-- drift marker -->
-    <circle class="mv-fade" cx="528" cy="153" r="6" fill="#ffffff" stroke="#c56848" stroke-width="2.5" />
+    <circle class="mv-fade mv-drift" cx="528" cy="153" r="6" />
     <!-- labels -->
-    <text x="60" y="92" font-size="12.5" fill="#101d2b" font-weight="600">Measured baseline</text>
-    <text class="mv-fade" x="352" y="92" font-size="12.5" fill="#101d2b">Baseline projected forward</text>
-    <text class="mv-fade" x="304" y="200" font-size="12.5" fill="#086c68" font-weight="600">Measured after improvements</text>
-    <text class="mv-fade" x="336" y="140" font-size="12.5" fill="#065552" font-weight="600">Verified change</text>
-    <text class="mv-fade" x="548" y="137" font-size="11.5" fill="#96482f" font-weight="600" text-anchor="end">Drift flagged</text>
+    <text class="mv-label" x="60" y="92" font-size="12.5" font-weight="600">Measured baseline</text>
+    <text class="mv-fade mv-label-muted" x="352" y="92" font-size="12.5">Baseline projected forward</text>
+    <text class="mv-fade mv-label-accent" x="304" y="200" font-size="12.5" font-weight="600">Measured after improvements</text>
+    <text class="mv-fade mv-label-accent" x="336" y="140" font-size="12.5" font-weight="600">Verified change</text>
+    <text class="mv-fade mv-label-flare" x="548" y="137" font-size="11.5" font-weight="600" text-anchor="end">Drift flagged</text>
   </svg>
   <figcaption>Illustrative only. Actual results depend on the building and the measures installed, and are reported from measured data.</figcaption>
 </figure>
 <style>
-  .mv-figure { margin: 0; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.25rem 1.25rem 1.35rem; box-shadow: var(--shadow); }
+  /* A teal-panel card in every context, so the lagoon and mist chart colours keep their contrast. */
+  .mv-figure { margin: 0; background: var(--teal-panel); border: 1px solid var(--teal-line); border-radius: 22px; padding: 1.5rem 1.5rem 1.35rem; }
   .mv-svg { width: 100%; height: auto; font-family: var(--font-sans); }
-  figcaption { margin-top: 0.5rem; font-size: 0.875rem; color: var(--ink-2); }
+  .mv-axis { stroke: var(--teal-border-dark); stroke-width: 1.5; }
+  .mv-divider { stroke: var(--teal-line); stroke-dasharray: 4 4; }
+  .mv-during { fill: var(--white); fill-opacity: 0.05; }
+  .mv-phase { font-family: var(--font-mono); fill: var(--mist-3); letter-spacing: 0.12em; }
+  .mv-area { fill: var(--lagoon); fill-opacity: 0.16; }
+  .mv-baseline { stroke: var(--mist-3); stroke-width: 2; stroke-dasharray: 6 5; }
+  .mv-measured { stroke: var(--lagoon); stroke-width: 3.5; stroke-linecap: round; }
+  .mv-drift { fill: var(--flare-light); }
+  .mv-label { fill: var(--mist-2); }
+  .mv-label-muted { fill: var(--mist-3); }
+  .mv-label-accent { fill: var(--lagoon); }
+  .mv-label-flare { fill: var(--flare-light); }
+  figcaption { margin-top: 0.75rem; font-size: 0.875rem; color: var(--mist-3); }
 
   /* Draw the measured lines once, then fade in the projected baseline, shading and labels. */
   @media (prefers-reduced-motion: no-preference) {

@@ -119,15 +119,15 @@ const principleTitles = ['Evidence first', 'One coordinated team', 'Your decisio
   :global(.about-band) { border-radius: 0; aspect-ratio: 21 / 9; max-height: 34rem; width: 100%; }
   @media (max-width: 40rem) { :global(.about-band) { aspect-ratio: 4 / 3; } }
 
-  .principles h2 { color: #fff; }
-  .principle-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; background: rgb(255 255 255 / 12%); border-radius: var(--radius-lg); overflow: hidden; }
+  .principles h2 { color: var(--white); }
+  .principle-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; background: var(--teal-line); border-radius: var(--radius-lg); overflow: hidden; }
   @media (min-width: 48rem) { .principle-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (min-width: 72rem) { .principle-list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   .principle-list li { background: var(--dark); padding: 1.75rem 1.5rem 2rem; }
   .p-num { display: block; font-family: var(--font-mono); font-size: 0.85rem; color: var(--amber); margin-bottom: 2.25rem; }
   .principle-list li { box-shadow: inset 0 2px 0 var(--coral); }
   .band-caption .caption { margin-top: 0.9rem; }
-  .principle-list h3 { color: #fff; font-size: 1.3rem; margin-bottom: 0.6rem; }
+  .principle-list h3 { color: var(--white); font-size: 1.3rem; margin-bottom: 0.6rem; }
   .principle-list p { color: var(--on-dark-muted); margin: 0; }
 
   .outcome-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
@@ -142,5 +142,5 @@ const principleTitles = ['Evidence first', 'One coordinated team', 'Your decisio
   .place-sub { font-size: var(--step-1); color: var(--copper); font-weight: 600; margin: 0; }
   .location-body p { color: var(--ink-2); font-size: 1.1rem; }
   .addr { display: grid; gap: 0.5rem; font-style: normal; margin-top: 1.25rem; line-height: 1.6; }
-  .addr a { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 640; font-size: 1.15rem; min-height: 2.5rem; }
+  .addr a { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 1.15rem; min-height: 2.75rem; }
 </style>

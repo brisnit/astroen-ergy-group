@@ -104,3 +104,16 @@ Terracotta #C56848, copper #96482F, amber #E8B44D, peach #F8E3D7 and coral #E78F
 | Graphic accents only (dashes, rules, rings) | Terracotta on white / peach | 3.85 / 3.11 (non-text, 3:1 minimum) |
 
 Not used, because they fail AA for text: terracotta as text, white text on terracotta (3.85), amber or coral on white, and amber on the teal band (3.30). The primary button is still teal with white text (6.26). Lighthouse colour-contrast passed on home, About, Funding, Approach and search, with an accessibility score of 100 on each.
+
+## Brand restyle (2026-10-21)
+
+Style-only restyle to the AstroEnergy Group brand: teal and flare tokens, Sora with IBM Plex Mono, pill buttons, and the Flux Star logo. All animation hooks and scripts are unchanged.
+- Unit tests 24/24, interaction tests 24/24, and motion tests 16/16 all pass. The motion tests cover the process line drawing, staged reveals, the M&V chart drawing, no-JavaScript and reduced-motion visibility, the header scroll state, FAQ expansion and card hover timing.
+- Style checks 21/21:
+  - The header, CTA, fonts, eyebrow and H1 sizes match the spec.
+  - Goal rows hover to teal-deep, and industry cards lift 4px with the teal shadow.
+  - The Federal card is solid teal and the Verify number is flare-light.
+  - The FAQ "+" rotates 45° when open, and the CTA panel is teal with a 36px radius.
+  - At 375 px there is no horizontal scroll and every tap target is at least 44 px.
+- Page sweep across 18 URLs at 360, 768 and 1440 px: no console errors, broken images, overflow or broken links.
+- Lighthouse: Accessibility 100 with colour-contrast passing on every page tested, Performance 97–99, CLS 0.
